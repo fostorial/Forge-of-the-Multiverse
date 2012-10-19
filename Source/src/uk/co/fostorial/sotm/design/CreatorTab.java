@@ -1,11 +1,15 @@
-package uk.co.fostorial.sotm;
+package uk.co.fostorial.sotm.design;
 
+import java.awt.Component;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
+import javax.swing.CellRendererPane;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -16,8 +20,13 @@ import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import uk.co.fostorial.sotm.CreatorFrame;
+import uk.co.fostorial.sotm.structure.Card;
+
 public class CreatorTab extends JSplitPane {
 
+	private static final long serialVersionUID = 6696291198937796985L;
+	
 	private JScrollPane imagePaneScroll;
 	private JLayeredPane imagePane;
 	private JPanel properties;
@@ -27,6 +36,8 @@ public class CreatorTab extends JSplitPane {
 	private int imageHeight = 1;
 	
 	private CreatorFrame frame;
+	
+	private Card card;
 	
 	public CreatorTab(CreatorFrame frame)
 	{
@@ -110,6 +121,30 @@ public class CreatorTab extends JSplitPane {
 				File outputfile = f;
 		    	ImageIO.write(image, "png", outputfile);
 			}
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+	}
+	
+	public void saveToPNG(String directory)
+	{
+		try {
+				File f = new File(directory + File.separator + card.getCardID() + "_" + card.getName().replace(" ", "") + ".jpg");
+				
+				File outputfile = f;
+		    	ImageIO.write(getImage(), "png", outputfile);
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+	}
+	
+	public void saveToJPG(String directory)
+	{
+		try {
+				File f = new File(directory + File.separator + card.getCardID() + "_" + card.getName().replace(" ", "") + ".png");
+				
+				File outputfile = f;
+		    	ImageIO.write(getImage(), "jpg", outputfile);
 		} catch (IOException e) {
 		    e.printStackTrace();
 		}
@@ -319,5 +354,70 @@ public class CreatorTab extends JSplitPane {
 			}
 		}
 		
+	}
+	
+	public Image getScaledImage(Image srcImg, int w, int h){
+	    BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+	    Graphics2D g2 = resizedImg.createGraphics();
+	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+	    g2.drawImage(srcImg, 0, 0, w, h, null);
+	    g2.dispose();
+	    return resizedImg;
+	}
+	
+	public Image getImage(int w, int h)
+	{
+		int sw = imageWidth;
+        int sh = imageHeight;
+        int type = BufferedImage.TYPE_INT_RGB;
+        BufferedImage image = new BufferedImage(sw, sh, type);
+       
+        Graphics2D g = image.createGraphics();
+        CellRendererPane crp = new CellRendererPane();
+        crp.add(imagePane);
+        
+        Component[] comps = imagePane.getComponents();
+        for (int i = comps.length - 1; i >= 0; i--)
+        {
+        	if (comps[i].isVisible())
+        	{
+        		crp.add(comps[i]);
+        		crp.paintComponent(g, comps[i], crp, comps[i].getBounds());
+        	}
+        }
+		
+		return getScaledImage(image, w, h);
+	}
+	
+	public BufferedImage getImage()
+	{
+		int sw = imageWidth;
+        int sh = imageHeight;
+        int type = BufferedImage.TYPE_INT_RGB;
+        BufferedImage image = new BufferedImage(sw, sh, type);
+       
+        Graphics2D g = image.createGraphics();
+        CellRendererPane crp = new CellRendererPane();
+        crp.add(imagePane);
+        
+        Component[] comps = imagePane.getComponents();
+        for (int i = comps.length - 1; i >= 0; i--)
+        {
+        	if (comps[i].isVisible())
+        	{
+        		crp.add(comps[i]);
+        		crp.paintComponent(g, comps[i], crp, comps[i].getBounds());
+        	}
+        }
+		
+		return image;
+	}
+
+	public Card getCard() {
+		return card;
+	}
+
+	public void setCard(Card card) {
+		this.card = card;
 	}
 }

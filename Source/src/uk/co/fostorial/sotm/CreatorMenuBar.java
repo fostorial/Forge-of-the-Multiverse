@@ -1,5 +1,6 @@
 package uk.co.fostorial.sotm;
 
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -7,29 +8,41 @@ import java.awt.event.KeyEvent;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
+
+import uk.co.fostorial.sotm.deck.DeckManager;
 
 public class CreatorMenuBar extends JMenuBar implements ActionListener {
 
-	final static public String FILE_NEW_HERO_FRONT = "F_HEROFRONT";
-	final static public String FILE_NEW_HERO_BACK = "F_HEROBACK";
-	final static public String FILE_NEW_HERO_CARD = "F_HEROCARD";
-	final static public String FILE_NEW_VILLIAN_FRONT = "F_VILLIANFRONT";
-	final static public String FILE_NEW_VILLIAN_CARD = "F_VILLIANCARD";
-
+	private static final long serialVersionUID = -1809228320182460442L;
 	
 	private CreatorFrame frame;
 	
 	private JMenu file;
-	private JMenuItem fileNewHeroFront;
-	private JMenuItem fileNewHeroBack;
-	private JMenuItem fileNewHeroCard;
-	private JMenuItem fileNewVillianFront;
-	private JMenuItem fileNewVillianCard;
+	private JMenuItem fileNewHeroDeck;
+	private JMenuItem fileNewVillainDeck;
+	private JMenuItem fileOpenDeck;
+	private JMenuItem fileSaveDeckAs;
 	private JMenuItem fileCloseCurrentTab;
-	private JMenuItem fileExportCurrentTabPNG;
-	private JMenuItem fileExportCurrentTabJPG;
 	private JMenuItem fileExit;
+	
+	private JMenu deck;
+	private JMenuItem deckNewCard;
+	private JMenuItem deckIncreaseNumberInDeck;
+	private JMenuItem deckDecreaseNumberInDeck;
+	private JMenuItem deckEditCard;
+	private JMenuItem deckDeleteCard;
+	private JMenuItem deckStatistics;
+	
+	private JMenu export;
+	private JMenuItem exportExportCurrentTabPNG;
+	private JMenuItem exportExportCurrentTabJPG;
+	private JMenuItem exportExportDeckIndividuallyPNG;
+	private JMenuItem exportExportDeckIndividuallyJPG;
+	
+	private JMenu help;
+	private JMenuItem version;
 	
 	public CreatorMenuBar(CreatorFrame frame)
 	{
@@ -41,68 +54,72 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 	{
 		file = new JMenu("File");
 		
-		fileNewHeroFront = new JMenuItem("New Hero Character Front");
-		fileNewHeroFront.setActionCommand(FILE_NEW_HERO_FRONT);
-		fileNewHeroFront.addActionListener(this);
+		fileNewHeroDeck = new JMenuItem("New Hero Deck");
+		fileNewHeroDeck.addActionListener(this);
 		KeyStroke key = KeyStroke.getKeyStroke(
-		        KeyEvent.VK_H, KeyEvent.CTRL_DOWN_MASK);
-		fileNewHeroFront.setAccelerator(key);
-		file.add(fileNewHeroFront);
-		
-		fileNewHeroBack = new JMenuItem("New Hero Character Back");
-		fileNewHeroBack.setActionCommand(FILE_NEW_HERO_BACK);
-		fileNewHeroBack.addActionListener(this);
-		key = KeyStroke.getKeyStroke(
 		        KeyEvent.VK_H, KeyEvent.ALT_DOWN_MASK);
-		fileNewHeroBack.setAccelerator(key);
-		file.add(fileNewHeroBack);
+		fileNewHeroDeck.setAccelerator(key);
+		file.add(fileNewHeroDeck);
 		
-		fileNewHeroCard = new JMenuItem("New Hero Character Card");
-		fileNewHeroCard.setActionCommand(FILE_NEW_HERO_CARD);
-		fileNewHeroCard.addActionListener(this);
+		fileNewVillainDeck = new JMenuItem("New Villain Deck");
+		fileNewVillainDeck.addActionListener(this);
 		key = KeyStroke.getKeyStroke(
-		        KeyEvent.VK_H, KeyEvent.SHIFT_DOWN_MASK);
-		fileNewHeroCard.setAccelerator(key);
-		file.add(fileNewHeroCard);
+		        KeyEvent.VK_V, KeyEvent.ALT_DOWN_MASK);
+		fileNewVillainDeck.setAccelerator(key);
+		file.add(fileNewVillainDeck);
 		
-		fileNewVillianFront = new JMenuItem("New Villain Character");
-		fileNewVillianFront.setActionCommand(FILE_NEW_VILLIAN_FRONT);
-		fileNewVillianFront.addActionListener(this);
+		fileOpenDeck = new JMenuItem("Open Deck...");
+		fileOpenDeck.addActionListener(this);
 		key = KeyStroke.getKeyStroke(
-		        KeyEvent.VK_V, KeyEvent.CTRL_DOWN_MASK);
-		fileNewVillianFront.setAccelerator(key);
-		file.add(fileNewVillianFront);
+		        KeyEvent.VK_O, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+		fileOpenDeck.setAccelerator(key);
+		file.add(fileOpenDeck);
 		
-		fileNewVillianCard = new JMenuItem("New Villian Card");
-		fileNewVillianCard.setActionCommand(FILE_NEW_VILLIAN_CARD);
-		fileNewVillianCard.addActionListener(this);
+		fileSaveDeckAs = new JMenuItem("Save Deck As...");
+		fileSaveDeckAs.addActionListener(this);
 		key = KeyStroke.getKeyStroke(
-		        KeyEvent.VK_V, KeyEvent.SHIFT_DOWN_MASK);
-		fileNewVillianCard.setAccelerator(key);
-		file.add(fileNewVillianCard);
+		        KeyEvent.VK_S, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+		fileSaveDeckAs.setAccelerator(key);
+		file.add(fileSaveDeckAs);
 		
-		file.addSeparator();
-		
-		fileExportCurrentTabJPG = new JMenuItem("Export to JPEG");
-		fileExportCurrentTabJPG.addActionListener(this);
-		key = KeyStroke.getKeyStroke(
-		        KeyEvent.VK_J, KeyEvent.CTRL_DOWN_MASK);
-		fileExportCurrentTabJPG.setAccelerator(key);
-		file.add(fileExportCurrentTabJPG);
-		
-		fileExportCurrentTabPNG = new JMenuItem("Export to PNG");
-		fileExportCurrentTabPNG.addActionListener(this);
-		key = KeyStroke.getKeyStroke(
-		        KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK);
-		fileExportCurrentTabPNG.setAccelerator(key);
-		file.add(fileExportCurrentTabPNG);
-		
-		fileCloseCurrentTab = new JMenuItem("Close Selected Tab");
+		fileCloseCurrentTab = new JMenuItem("Close");
 		fileCloseCurrentTab.addActionListener(this);
 		key = KeyStroke.getKeyStroke(
-		        KeyEvent.VK_C, KeyEvent.ALT_DOWN_MASK);
+		        KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
 		fileCloseCurrentTab.setAccelerator(key);
 		file.add(fileCloseCurrentTab);
+		
+		export = new JMenu("Export");
+		
+		exportExportCurrentTabJPG = new JMenuItem("Export to JPEG");
+		exportExportCurrentTabJPG.addActionListener(this);
+		key = KeyStroke.getKeyStroke(
+		        KeyEvent.VK_J, KeyEvent.CTRL_DOWN_MASK);
+		exportExportCurrentTabJPG.setAccelerator(key);
+		export.add(exportExportCurrentTabJPG);
+		
+		exportExportCurrentTabPNG = new JMenuItem("Export to PNG");
+		exportExportCurrentTabPNG.addActionListener(this);
+		key = KeyStroke.getKeyStroke(
+		        KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK);
+		exportExportCurrentTabPNG.setAccelerator(key);
+		export.add(exportExportCurrentTabPNG);
+		
+		exportExportDeckIndividuallyPNG = new JMenuItem("Export Cards to PNG");
+		exportExportDeckIndividuallyPNG.addActionListener(this);
+		key = KeyStroke.getKeyStroke(
+		        KeyEvent.VK_J, KeyEvent.CTRL_DOWN_MASK);
+		//exportExportDeckIndividuallyPNG.setAccelerator(key);
+		export.add(exportExportDeckIndividuallyPNG);
+		
+		exportExportDeckIndividuallyJPG = new JMenuItem("Export Cards to JPG");
+		exportExportDeckIndividuallyJPG.addActionListener(this);
+		key = KeyStroke.getKeyStroke(
+		        KeyEvent.VK_J, KeyEvent.CTRL_DOWN_MASK);
+		//exportExportDeckIndividuallyPNG.setAccelerator(key);
+		export.add(exportExportDeckIndividuallyJPG);
+		
+		file.add(export);
 		
 		file.addSeparator();
 		
@@ -114,6 +131,66 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 		file.add(fileExit);
 		
 		this.add(file);
+		
+		
+		deck = new JMenu("Deck");
+		
+		deckNewCard = new JMenuItem("Add New Card");
+		deckNewCard.addActionListener(this);
+		key = KeyStroke.getKeyStroke(
+		        KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK);
+		deckNewCard.setAccelerator(key);
+		deck.add(deckNewCard);
+		
+		deckEditCard = new JMenuItem("Edit Card");
+		deckEditCard.addActionListener(this);
+		key = KeyStroke.getKeyStroke(
+		        KeyEvent.VK_E, KeyEvent.CTRL_DOWN_MASK);
+		deckEditCard.setAccelerator(key);
+		deck.add(deckEditCard);
+		
+		deckDeleteCard = new JMenuItem("Delete Card");
+		deckDeleteCard.addActionListener(this);
+		key = KeyStroke.getKeyStroke(
+		        KeyEvent.VK_D, KeyEvent.CTRL_DOWN_MASK);
+		deckDeleteCard.setAccelerator(key);
+		deck.add(deckDeleteCard);
+		
+		deck.addSeparator();
+		
+		deckIncreaseNumberInDeck = new JMenuItem("Increase Number in Deck");
+		deckIncreaseNumberInDeck.addActionListener(this);
+		key = KeyStroke.getKeyStroke(
+		        KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK);
+		deckIncreaseNumberInDeck.setAccelerator(key);
+		deck.add(deckIncreaseNumberInDeck);
+		
+		deckDecreaseNumberInDeck = new JMenuItem("Decrease Number in Deck");
+		deckDecreaseNumberInDeck.addActionListener(this);
+		key = KeyStroke.getKeyStroke(
+		        KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK);
+		deckDecreaseNumberInDeck.setAccelerator(key);
+		deck.add(deckDecreaseNumberInDeck);
+		
+		deck.addSeparator();
+		
+		deckStatistics = new JMenuItem("Deck Statistics");
+		deckStatistics.addActionListener(this);
+		key = KeyStroke.getKeyStroke(
+		        KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
+		deckStatistics.setAccelerator(key);
+		deck.add(deckStatistics);
+		
+		this.add(deck);
+		
+		
+		help = new JMenu("Help");
+		
+		version = new JMenuItem("Version Information");
+		version.addActionListener(this);
+		help.add(version);
+		
+		this.add(help);
 	}
 
 	@Override
@@ -123,44 +200,117 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 			System.exit(0);
 		}
 		
-		if (e.getActionCommand().equals("Export to JPEG"))
+		if (e.getSource().equals(fileNewHeroDeck))
+		{
+			frame.newWindow(CreatorFrame.FILE_NEW_HERO_DECK, null);
+		}
+		
+		if (e.getSource().equals(fileNewVillainDeck))
+		{
+			frame.newWindow(CreatorFrame.FILE_NEW_VILLAIN_DECK, null);
+		}
+		
+		if (e.getSource().equals(fileOpenDeck))
+		{
+			frame.newWindow(CreatorFrame.FILE_OPEN_HERO_DECK, null);
+		}
+		
+		if (e.getSource().equals(fileSaveDeckAs))
+		{
+			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
+			{
+				DeckManager manager = (DeckManager)frame.getTabbedPane().getSelectedComponent();
+				manager.saveDeck();
+			}
+		}
+		
+		if (e.getSource().equals(exportExportCurrentTabJPG))
 		{
 			frame.exportToJPEG();
 		}
 		
-		if (e.getActionCommand().equals("Export to PNG"))
+		if (e.getSource().equals(exportExportCurrentTabPNG))
 		{
 			frame.exportToPNG();
 		}
 		
-		if (e.getActionCommand().equals("Close Selected Tab"))
+		if (e.getSource().equals(fileCloseCurrentTab))
 		{
 			frame.closeCurrentFrame();
 		}
 		
-		if (e.getActionCommand().equals(FILE_NEW_HERO_FRONT))
+		
+		if (e.getSource().equals(deckStatistics))
 		{
-			frame.newWindow(CreatorFrame.FILE_NEW_HERO_FRONT);
+			
 		}
 		
-		if (e.getActionCommand().equals(FILE_NEW_HERO_BACK))
+		if (e.getSource().equals(deckNewCard))
 		{
-			frame.newWindow(CreatorFrame.FILE_NEW_HERO_BACK);
+			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
+			{
+				DeckManager manager = (DeckManager)frame.getTabbedPane().getSelectedComponent();
+				manager.addCardToDeck();
+			}
 		}
 		
-		if (e.getActionCommand().equals(FILE_NEW_HERO_CARD))
+		if (e.getSource().equals(deckIncreaseNumberInDeck))
 		{
-			frame.newWindow(CreatorFrame.FILE_NEW_HERO_CARD);
+			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
+			{
+				DeckManager manager = (DeckManager)frame.getTabbedPane().getSelectedComponent();
+				manager.increaseNumberInDeck();
+			}
 		}
 		
-		if (e.getActionCommand().equals(FILE_NEW_VILLIAN_FRONT))
+		if (e.getSource().equals(deckDecreaseNumberInDeck))
 		{
-			frame.newWindow(CreatorFrame.FILE_NEW_VILLIAN_FRONT);
+			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
+			{
+				DeckManager manager = (DeckManager)frame.getTabbedPane().getSelectedComponent();
+				manager.decreaseNumberInDeck();
+			}
 		}
 		
-		if (e.getActionCommand().equals(FILE_NEW_VILLIAN_CARD))
+		if (e.getSource().equals(deckEditCard))
 		{
-			frame.newWindow(CreatorFrame.FILE_NEW_VILLIAN_CARD);
+			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
+			{
+				DeckManager manager = (DeckManager)frame.getTabbedPane().getSelectedComponent();
+				manager.editCard();
+			}
+		}
+		
+		if (e.getSource().equals(deckDeleteCard))
+		{
+			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
+			{
+				DeckManager manager = (DeckManager)frame.getTabbedPane().getSelectedComponent();
+				manager.deleteCard();
+			}
+		}
+		
+		if (e.getSource().equals(exportExportDeckIndividuallyPNG))
+		{
+			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
+			{
+				DeckManager manager = (DeckManager)frame.getTabbedPane().getSelectedComponent();
+				manager.exportDeckIndividuallyPNG();
+			}
+		}
+		
+		if (e.getSource().equals(exportExportDeckIndividuallyJPG))
+		{
+			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
+			{
+				DeckManager manager = (DeckManager)frame.getTabbedPane().getSelectedComponent();
+				manager.exportDeckIndividuallyJPG();
+			}
+		}
+		
+		if (e.getSource().equals(version))
+		{
+			JOptionPane.showMessageDialog(frame, "v0.2", "Version Number", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
@@ -172,4 +322,85 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 		this.frame = frame;
 	}
 	
+	public void deckPaneSelected()
+	{
+		deck.setVisible(true);
+		deck.setEnabled(true);
+		
+		fileCloseCurrentTab.setVisible(true);
+		fileCloseCurrentTab.setEnabled(true);
+		
+		fileSaveDeckAs.setVisible(true);
+		fileSaveDeckAs.setEnabled(true);
+		
+		export.setEnabled(true);
+		export.setVisible(true);
+		
+		exportExportCurrentTabJPG.setEnabled(false);
+		exportExportCurrentTabJPG.setVisible(false);
+		
+		exportExportCurrentTabPNG.setEnabled(false);
+		exportExportCurrentTabPNG.setVisible(false);
+		
+		exportExportDeckIndividuallyPNG.setEnabled(true);
+		exportExportDeckIndividuallyPNG.setVisible(true);
+		
+		exportExportDeckIndividuallyJPG.setEnabled(true);
+		exportExportDeckIndividuallyJPG.setVisible(true);
+		
+	}
+	
+	public void cardPaneSelected()
+	{
+		deck.setVisible(false);
+		deck.setEnabled(false);
+		
+		fileCloseCurrentTab.setVisible(true);
+		fileCloseCurrentTab.setEnabled(true);
+		
+		fileSaveDeckAs.setVisible(false);
+		fileSaveDeckAs.setEnabled(false);
+		
+		export.setEnabled(true);
+		export.setVisible(true);
+		
+		exportExportCurrentTabJPG.setEnabled(true);
+		exportExportCurrentTabJPG.setVisible(true);
+		
+		exportExportCurrentTabPNG.setEnabled(true);
+		exportExportCurrentTabPNG.setVisible(true);
+		
+		exportExportDeckIndividuallyPNG.setEnabled(false);
+		exportExportDeckIndividuallyPNG.setVisible(false);
+		
+		exportExportDeckIndividuallyJPG.setEnabled(false);
+		exportExportDeckIndividuallyJPG.setVisible(false);
+	}
+	
+	public void noPaneSelected()
+	{
+		deck.setVisible(false);
+		deck.setEnabled(false);
+		
+		fileCloseCurrentTab.setVisible(false);
+		fileCloseCurrentTab.setEnabled(false);
+		
+		fileSaveDeckAs.setVisible(false);
+		fileSaveDeckAs.setEnabled(false);
+		
+		export.setEnabled(false);
+		export.setVisible(false);
+		
+		exportExportCurrentTabJPG.setEnabled(false);
+		exportExportCurrentTabJPG.setVisible(false);
+		
+		exportExportCurrentTabPNG.setEnabled(false);
+		exportExportCurrentTabPNG.setVisible(false);
+		
+		exportExportDeckIndividuallyPNG.setEnabled(false);
+		exportExportDeckIndividuallyPNG.setVisible(false);
+		
+		exportExportDeckIndividuallyJPG.setEnabled(false);
+		exportExportDeckIndividuallyJPG.setVisible(false);
+	}
 }

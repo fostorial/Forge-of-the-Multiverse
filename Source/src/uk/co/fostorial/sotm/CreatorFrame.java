@@ -1,26 +1,58 @@
 package uk.co.fostorial.sotm;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Window;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
-import uk.co.fostorial.sotm.characterfront.CreatorTabHeroBack;
-import uk.co.fostorial.sotm.characterfront.CreatorTabHeroCard;
-import uk.co.fostorial.sotm.characterfront.CreatorTabHeroFront;
-import uk.co.fostorial.sotm.characterfront.CreatorTabVillainCard;
-import uk.co.fostorial.sotm.characterfront.CreatorTabVillianFront;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
-public class CreatorFrame extends JFrame {
+import uk.co.fostorial.sotm.deck.DeckManager;
+import uk.co.fostorial.sotm.design.CreatorTab;
+import uk.co.fostorial.sotm.design.CreatorTabCardBack;
+import uk.co.fostorial.sotm.design.CreatorTabHeroBack;
+import uk.co.fostorial.sotm.design.CreatorTabHeroCard;
+import uk.co.fostorial.sotm.design.CreatorTabHeroFront;
+import uk.co.fostorial.sotm.design.CreatorTabVillainCard;
+import uk.co.fostorial.sotm.design.CreatorTabVillainFront;
+import uk.co.fostorial.sotm.structure.BackCard;
+import uk.co.fostorial.sotm.structure.Card;
+import uk.co.fostorial.sotm.structure.Deck;
+import uk.co.fostorial.sotm.structure.HeroBackCard;
+import uk.co.fostorial.sotm.structure.HeroCard;
+import uk.co.fostorial.sotm.structure.HeroDeck;
+import uk.co.fostorial.sotm.structure.HeroFrontCard;
+import uk.co.fostorial.sotm.structure.VillainCard;
+import uk.co.fostorial.sotm.structure.VillainDeck;
+import uk.co.fostorial.sotm.structure.VillainFrontCard;
+
+public class CreatorFrame extends JFrame implements ChangeListener {
+	
+	private static final long serialVersionUID = 8105592648557148065L;
 	
 	final static public int FILE_NEW_HERO_FRONT = 1;
 	final static public int FILE_NEW_HERO_BACK = 2;
 	final static public int FILE_NEW_HERO_CARD = 3;
 	final static public int FILE_NEW_VILLIAN_FRONT = 4;
 	final static public int FILE_NEW_VILLIAN_CARD = 5;
+	final static public int FILE_NEW_CARD_BACK = 6;
+	final static public int FILE_NEW_HERO_DECK = 7;
+	final static public int FILE_OPEN_HERO_DECK = 8;
+	final static public int FILE_NEW_VILLAIN_DECK = 9;
 	
 	private CreatorMenuBar creatorMenuBar;
 	
@@ -36,43 +68,251 @@ public class CreatorFrame extends JFrame {
 	{
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(500, 500);
-		this.setTitle("SOTM Creator");
+		this.setTitle("Forge of the Multiverse");
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		
-		enableOSXFullscreen(this);
 		
 		creatorMenuBar = new CreatorMenuBar(this);
 		this.setJMenuBar(creatorMenuBar);
 		
 		tabbedPane = new JTabbedPane();
+		tabbedPane.addChangeListener(this);
 		this.add(tabbedPane, BorderLayout.CENTER);
+		
+		enableOSXFullscreen(this);
+		creatorMenuBar.noPaneSelected();
 	}
 	
-	public void newWindow(int type)
+	public void newWindow(int type, Card card)
 	{
 		switch (type)
 		{
 		case FILE_NEW_HERO_FRONT:
-			tabbedPane.addTab("New Hero Front", new CreatorTabHeroFront(this));
+			tabbedPane.addTab(card.getName(), new CreatorTabHeroFront(this, (HeroFrontCard)card));
 			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
 			break;
 		case FILE_NEW_HERO_BACK:
-			tabbedPane.addTab("New Hero Back", new CreatorTabHeroBack(this));
+			tabbedPane.addTab(card.getName(), new CreatorTabHeroBack(this, (HeroBackCard)card));
 			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
 			break;
 		case FILE_NEW_HERO_CARD:
-			tabbedPane.addTab("New Hero Card", new CreatorTabHeroCard(this));
+			tabbedPane.addTab(card.getName(), new CreatorTabHeroCard(this, (HeroCard)card));
 			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
 			break;
 		case FILE_NEW_VILLIAN_FRONT:
-			tabbedPane.addTab("New Villain Character", new CreatorTabVillianFront(this));
+			tabbedPane.addTab("New Villain Character", new CreatorTabVillainFront(this, (VillainFrontCard)card));
 			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
 			break;
 		case FILE_NEW_VILLIAN_CARD:
-			tabbedPane.addTab("New Villian Card", new CreatorTabVillainCard(this));
+			tabbedPane.addTab("New Villian Card", new CreatorTabVillainCard(this, (VillainCard)card));
 			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
 			break;
+		case FILE_NEW_CARD_BACK:
+			tabbedPane.addTab(card.getName(), new CreatorTabCardBack(this, (BackCard)card));
+			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
+			break;
+		case FILE_NEW_HERO_DECK:
+			tabbedPane.addTab("New Hero Deck", new DeckManager(DeckManager.HERO_MODE, null, this));
+			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
+			((JSplitPane)tabbedPane.getSelectedComponent()).getLeftComponent().requestFocus();
+			break;
+		case FILE_NEW_VILLAIN_DECK:
+			tabbedPane.addTab("New Villain Deck", new DeckManager(DeckManager.VILLAIN_MODE, null, this));
+			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
+			((JSplitPane)tabbedPane.getSelectedComponent()).getLeftComponent().requestFocus();
+			break;
+		case FILE_OPEN_HERO_DECK:
+			Deck deck = loadDeck();
+			if (deck != null)
+			{
+				if (deck instanceof HeroDeck)
+				{
+					tabbedPane.addTab(deck.getName(), new DeckManager(DeckManager.HERO_MODE, deck, this));
+				}
+				if (deck instanceof VillainDeck)
+				{
+					tabbedPane.addTab(deck.getName(), new DeckManager(DeckManager.VILLAIN_MODE, deck, this));
+				}
+				tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
+				//((JSplitPane)tabbedPane.getSelectedComponent()).getLeftComponent().requestFocus();
+			}
+			break;
 		}
+	}
+	
+	public Deck loadDeck()
+	{
+		Deck deck = null;
+		try {
+			JFileChooser chooser = new JFileChooser();
+			int outcome = chooser.showOpenDialog(this);
+			
+			if (outcome == JFileChooser.APPROVE_OPTION)
+			{
+				File f = chooser.getSelectedFile();
+				
+				Document document = Jsoup.parse(f, null);
+				
+				String deckType = "deck";
+				Elements els = document.getElementsByTag("type");
+				for (Element el : els)
+				{
+					deckType = el.text();
+				}
+				
+				List<Card> cards = new ArrayList<Card>();
+				
+				els = document.getElementsByTag("herofrontcard");
+				for (Element el : els)
+				{
+					Integer id = new Integer(findElement(el, "id"));
+					String name = findElement(el, "name");
+					HeroFrontCard card = new HeroFrontCard(name, id);
+					card.setClasses(findElement(el, "classes"));
+					card.setHealthPoints(findElement(el, "healthpoints"));
+					card.setPortraitFile(findElement(el, "portrait"));
+					card.setPowerName(findElement(el, "powername"));
+					card.setPowerText(findElement(el, "powertext"));
+					card.setNemesisPath(findElement(el, "nemesispath"));
+					card.setNumberInDeck(new Integer(findElement(el, "numberindeck")));
+					card.setColor(new Color(new Integer(findElement(el, "powercolor")).intValue()));
+					cards.add(card);
+				}
+				
+				els = document.getElementsByTag("herobackcard");
+				for (Element el : els)
+				{
+					Integer id = new Integer(findElement(el, "id"));
+					String name = findElement(el, "name");
+					HeroBackCard card = new HeroBackCard(name, id);
+					card.setClasses(findElement(el, "classes"));
+					card.setHealthPoints(findElement(el, "healthpoints"));
+					card.setPortraitFile(findElement(el, "portrait"));
+					card.setNumberInDeck(new Integer(findElement(el, "numberindeck")));
+					card.setTextColour(new Color(new Integer(findElement(el, "abilitycolor")).intValue()));
+					card.setAbilityLine1(findElement(el, "abilityline1"));
+					card.setAbilityLine2(findElement(el, "abilityline2"));
+					card.setAbilityLine3(findElement(el, "abilityline3"));
+					card.setAbilityLine4(findElement(el, "abilityline4"));
+					card.setAbilityLine5(findElement(el, "abilityline5"));
+					card.setAbilityLine6(findElement(el, "abilityline6"));
+					cards.add(card);
+				}
+				
+				els = document.getElementsByTag("backcard");
+				for (Element el : els)
+				{
+					Integer id = new Integer(findElement(el, "id"));
+					String name = findElement(el, "name");
+					BackCard card = new BackCard(name, id);
+					card.setClasses(findElement(el, "classes"));
+					card.setHealthPoints(findElement(el, "healthpoints"));
+					card.setPortraitFile(findElement(el, "portrait"));
+					card.setNumberInDeck(new Integer(findElement(el, "numberindeck")));
+					cards.add(card);
+				}
+				
+				els = document.getElementsByTag("herocard");
+				for (Element el : els)
+				{
+					Integer id = new Integer(findElement(el, "id"));
+					String name = findElement(el, "name");
+					HeroCard card = new HeroCard(name, id);
+					card.setClasses(findElement(el, "classes"));
+					card.setHealthPoints(findElement(el, "healthpoints"));
+					card.setHealthPointsImage(findElement(el, "healthpointsimage"));
+					card.setHealthPointsVisible(new Boolean(findElement(el, "healthpointsvisible")));
+					card.setPortraitFile(findElement(el, "portrait"));
+					card.setNumberInDeck(new Integer(findElement(el, "numberindeck")));
+					card.setQuoteString1(findElement(el, "quotestring1"));
+					card.setQuoteString2(findElement(el, "quotestring2"));
+					card.setIssueString(findElement(el, "issuestring"));
+					card.setNameColor(new Color(new Integer(findElement(el, "namecolour")).intValue()));
+					card.setClassColor(new Color(new Integer(findElement(el, "classcolour")).intValue()));
+					cards.add(card);
+				}
+				
+				els = document.getElementsByTag("villainfrontcard");
+				for (Element el : els)
+				{
+					Integer id = new Integer(findElement(el, "id"));
+					String name = findElement(el, "name");
+					VillainFrontCard card = new VillainFrontCard(name, id);
+					card.setClasses(findElement(el, "classes"));
+					card.setHealthPoints(findElement(el, "healthpoints"));
+					card.setPortraitFile(findElement(el, "portrait"));
+					card.setDescription1(findElement(el, "description1"));
+					card.setDescription2(findElement(el, "description2"));
+					card.setNemesisPath(findElement(el, "nemesispath"));
+					card.setNumberInDeck(new Integer(findElement(el, "numberindeck")));
+					card.setColor(new Color(new Integer(findElement(el, "descriptioncolor")).intValue()));
+					card.setClassColor(new Color(new Integer(findElement(el, "classcolor")).intValue()));
+					cards.add(card);
+				}
+				
+				els = document.getElementsByTag("villaincard");
+				for (Element el : els)
+				{
+					Integer id = new Integer(findElement(el, "id"));
+					String name = findElement(el, "name");
+					VillainCard card = new VillainCard(name, id);
+					card.setClasses(findElement(el, "classes"));
+					card.setHealthPoints(findElement(el, "healthpoints"));
+					card.setHealthPointsImage(findElement(el, "healthpointsimage"));
+					card.setHealthPointsVisible(new Boolean(findElement(el, "healthpointsvisible")));
+					card.setPortraitFile(findElement(el, "portrait"));
+					card.setNumberInDeck(new Integer(findElement(el, "numberindeck")));
+					card.setQuoteString1(findElement(el, "quotestring1"));
+					card.setQuoteString2(findElement(el, "quotestring2"));
+					card.setIssueString(findElement(el, "issuestring"));
+					card.setNameColor(new Color(new Integer(findElement(el, "namecolour")).intValue()));
+					card.setClassColor(new Color(new Integer(findElement(el, "classcolour")).intValue()));
+					cards.add(card);
+				}
+				
+				if (deckType.equals("herodeck"))
+				{
+					deck = new HeroDeck(cards);
+				}
+				else if (deckType.equals("villaindeck"))
+				{
+					deck = new VillainDeck(cards);
+				}
+				else
+				{
+					deck = new Deck();
+				}
+				deck.setNextID(findHighestID(deck.getCards()).intValue());
+				deck.setName(f.getName().replace(".xml", ""));
+			}
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+		
+		return deck;
+	}
+	
+	private String findElement(Element el, String attr)
+	{
+		String val = "";
+		Elements subels = el.getElementsByTag(attr);
+		for (Element sel : subels)
+		{
+			val = sel.text();
+		}
+		return val;
+	}
+	
+	private Integer findHighestID(List<Card> cards)
+	{
+		Integer i = new Integer(0);
+		for(Card c : cards)
+		{
+			if (c.getCardID().intValue() > i.intValue())
+			{
+				i = c.getCardID();
+			}
+		}
+		return i;
 	}
 	
 	public void closeCurrentFrame()
@@ -131,6 +371,25 @@ public class CreatorFrame extends JFrame {
 	public void setTabbedPane(JTabbedPane tabbedPane) {
 		this.tabbedPane = tabbedPane;
 	}
-	
-	
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		JTabbedPane pane = (JTabbedPane)e.getSource();
+		
+		if (pane.getSelectedIndex() == -1)
+		{
+			creatorMenuBar.noPaneSelected();
+		}
+		else if (pane.getSelectedComponent() instanceof DeckManager)
+		{
+			creatorMenuBar.deckPaneSelected();
+			pane.getSelectedComponent().repaint();
+			DeckManager deckManager = (DeckManager)pane.getSelectedComponent();
+			deckManager.loadPreview();
+		}
+		else if (pane.getSelectedComponent() instanceof CreatorTab)
+		{
+			creatorMenuBar.cardPaneSelected();
+		}
+	}
 }
