@@ -16,6 +16,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import say.swing.JFontChooser;
 import uk.co.fostorial.sotm.CreatorFrame;
 import uk.co.fostorial.sotm.structure.VillainFrontCard;
 
@@ -50,6 +51,14 @@ public class CreatorTabVillainFront extends CreatorTab implements ActionListener
 	private JButton updateButton;
 	private JButton saveButton;
 	private JButton cancelButton;
+	private JButton nameFontButton;
+	private JButton nameFontColorButton;
+	private JButton hpFontButton;
+	private JButton hpFontColorButton;
+	private JButton classFontButton;
+	private JButton classFontColorButton;
+	private JButton descriptionFontButton;
+	private JButton descriptionFontColorButton;
 	
 	private VillainFrontCard villainFrontCard;
 	
@@ -78,76 +87,116 @@ public class CreatorTabVillainFront extends CreatorTab implements ActionListener
 		getProperties().setOpaque(true);
 		
 		txtHeroName = new JTextField(villainFrontCard.getName());
-		txtHeroName.setBorder(BorderFactory.createTitledBorder("Hero Name"));
-		txtHeroName.setBounds(5, 0, 250, 50);
+		txtHeroName.setBorder(BorderFactory.createTitledBorder("Villain Name"));
+		txtHeroName.setBounds(5, 10, 250, 50);
 		txtHeroName.setHorizontalAlignment(JTextField.CENTER);
 		txtHeroName.getDocument().addDocumentListener(new PropertiesDocumentListener(name));
 		getProperties().add(txtHeroName);
 		
+		nameFontButton = new JButton("Change Name Font");
+		nameFontButton.setBounds(5, txtHeroName.getBounds().y + txtHeroName.getBounds().height + 10, 250, 25);
+		nameFontButton.addActionListener(this);
+		getProperties().add(nameFontButton);
+		
+		nameFontColorButton = new JButton("Change Name Color");
+		nameFontColorButton.setBounds(5, nameFontButton.getBounds().y + nameFontButton.getBounds().height + 10, 250, 25);
+		nameFontColorButton.addActionListener(this);
+		getProperties().add(nameFontColorButton);
+		
 		txtHealthPoints = new JTextField(villainFrontCard.getHealthPoints());
 		txtHealthPoints.setBorder(BorderFactory.createTitledBorder("Health Points"));
-		txtHealthPoints.setBounds(5, 60, 250, 50);
+		txtHealthPoints.setBounds(5, nameFontColorButton.getBounds().y + nameFontColorButton.getBounds().height + 10, 250, 50);
 		txtHealthPoints.setHorizontalAlignment(JTextField.CENTER);
 		txtHealthPoints.getDocument().addDocumentListener(new PropertiesDocumentListener(healthPoints));
 		getProperties().add(txtHealthPoints);
 		
+		hpFontButton = new JButton("Change HP Font");
+		hpFontButton.setBounds(5, txtHealthPoints.getBounds().y + txtHealthPoints.getBounds().height + 10, 250, 25);
+		hpFontButton.addActionListener(this);
+		getProperties().add(hpFontButton);
+		
+		hpFontColorButton = new JButton("Change HP Color");
+		hpFontColorButton.setBounds(5, hpFontButton.getBounds().y + hpFontButton.getBounds().height + 10, 250, 25);
+		hpFontColorButton.addActionListener(this);
+		getProperties().add(hpFontColorButton);
+		
 		txtClasses = new JTextField(villainFrontCard.getClasses());
 		txtClasses.setBorder(BorderFactory.createTitledBorder("Classes"));
-		txtClasses.setBounds(5, 120, 250, 50);
+		txtClasses.setBounds(5, hpFontColorButton.getBounds().y + hpFontColorButton.getBounds().height + 10, 250, 50);
 		txtClasses.setHorizontalAlignment(JTextField.CENTER);
 		txtClasses.getDocument().addDocumentListener(new PropertiesDocumentListener(classes));
 		getProperties().add(txtClasses);
 		
-		classBGColour = new JButton("Set Class Colour");
-		classBGColour.setBounds(5, 180, 250, 25);
+		classFontButton = new JButton("Change Class Font");
+		classFontButton.setBounds(5, txtClasses.getBounds().y + txtClasses.getBounds().height + 10, 250, 25);
+		classFontButton.addActionListener(this);
+		getProperties().add(classFontButton);
+		
+		classFontColorButton = new JButton("Change Class Color");
+		classFontColorButton.setBounds(5, classFontButton.getBounds().y + classFontButton.getBounds().height + 10, 250, 25);
+		classFontColorButton.addActionListener(this);
+		getProperties().add(classFontColorButton);
+		
+		classBGColour = new JButton("Set Class BG Colour");
+		classBGColour.setBounds(5, classFontColorButton.getBounds().y + classFontColorButton.getBounds().height + 10, 250, 25);
 		classBGColour.addActionListener(this);
 		getProperties().add(classBGColour);
 		
 		txtDescriptionLine1 = new JTextField(villainFrontCard.getDescription1());
 		txtDescriptionLine1.setBorder(BorderFactory.createTitledBorder("Description Line 1"));
-		txtDescriptionLine1.setBounds(5, 210, 250, 50);
+		txtDescriptionLine1.setBounds(5, classBGColour.getBounds().y + classBGColour.getBounds().height + 10, 250, 50);
 		txtDescriptionLine1.setHorizontalAlignment(JTextField.CENTER);
 		txtDescriptionLine1.getDocument().addDocumentListener(new PropertiesDocumentListener(description1));
 		getProperties().add(txtDescriptionLine1);
 		
 		txtDescriptionLine2 = new JTextField(villainFrontCard.getDescription2());
 		txtDescriptionLine2.setBorder(BorderFactory.createTitledBorder("Description Line 2"));
-		txtDescriptionLine2.setBounds(5, 270, 250, 50);
+		txtDescriptionLine2.setBounds(5, txtDescriptionLine1.getBounds().y + txtDescriptionLine1.getBounds().height + 10, 250, 50);
 		txtDescriptionLine2.setHorizontalAlignment(JTextField.CENTER);
 		txtDescriptionLine2.getDocument().addDocumentListener(new PropertiesDocumentListener(description2));
 		getProperties().add(txtDescriptionLine2);
 		
-		descriptionBGColour = new JButton("Set Description Colour");
-		descriptionBGColour.setBounds(5, 330, 250, 25);
+		descriptionFontButton = new JButton("Change Description Font");
+		descriptionFontButton.setBounds(5, txtDescriptionLine2.getBounds().y + txtDescriptionLine2.getBounds().height + 10, 250, 25);
+		descriptionFontButton.addActionListener(this);
+		getProperties().add(descriptionFontButton);
+		
+		descriptionFontColorButton = new JButton("Change Description Color");
+		descriptionFontColorButton.setBounds(5, descriptionFontButton.getBounds().y + descriptionFontButton.getBounds().height + 10, 250, 25);
+		descriptionFontColorButton.addActionListener(this);
+		getProperties().add(descriptionFontColorButton);
+		
+		descriptionBGColour = new JButton("Set Description BG Colour");
+		descriptionBGColour.setBounds(5, descriptionFontColorButton.getBounds().y + descriptionFontColorButton.getBounds().height + 10, 250, 25);
 		descriptionBGColour.addActionListener(this);
 		getProperties().add(descriptionBGColour);
 		
 		portraitButton = new JButton("Set Portrait Image");
-		portraitButton.setBounds(5, 360, 250, 25);
+		portraitButton.setBounds(5, descriptionBGColour.getBounds().y + descriptionBGColour.getBounds().height + 10, 250, 25);
 		portraitButton.addActionListener(this);
 		getProperties().add(portraitButton);
 		
 		nemesisButton = new JButton("Set Nemesis Image");
-		nemesisButton.setBounds(5, 390, 250, 25);
+		nemesisButton.setBounds(5, portraitButton.getBounds().y + portraitButton.getBounds().height + 10, 250, 25);
 		nemesisButton.addActionListener(this);
 		getProperties().add(nemesisButton);
 		
 		updateButton = new JButton("Update Card");
-		updateButton.setBounds(5, 420, 250, 25);
+		updateButton.setBounds(5, nemesisButton.getBounds().y + nemesisButton.getBounds().height + 10, 250, 25);
 		updateButton.addActionListener(this);
 		getProperties().add(updateButton);
 		
 		saveButton = new JButton("Save Card");
-		saveButton.setBounds(5, 450, 250, 25);
+		saveButton.setBounds(5, updateButton.getBounds().y + updateButton.getBounds().height + 10, 250, 25);
 		saveButton.addActionListener(this);
 		getProperties().add(saveButton);
 		
 		cancelButton = new JButton("Cancel");
-		cancelButton.setBounds(5, 480, 250, 25);
+		cancelButton.setBounds(5, saveButton.getBounds().y + saveButton.getBounds().height + 10, 250, 25);
 		cancelButton.addActionListener(this);
 		getProperties().add(cancelButton);
 		
-		getProperties().setPreferredSize(new Dimension(260, 520));
+		getProperties().setPreferredSize(new Dimension(260, cancelButton.getBounds().y + cancelButton.getBounds().height + 10));
 	}
 	
 	private void setupImagePane()
@@ -155,9 +204,9 @@ public class CreatorTabVillainFront extends CreatorTab implements ActionListener
 		ImageIcon img = null;
 		
 		classes = new JLabel(villainFrontCard.getClasses());
-		classes.setBounds(132, 854, 478 - 132, 904 - 854);
-		classes.setForeground(Color.BLACK);
-		Font font = new Font("Comic Book", Font.PLAIN, 30);
+		classes.setBounds(132, 860, 478 - 132, 910 - 860);
+		classes.setForeground(villainFrontCard.getClassFontColor());
+		Font font = villainFrontCard.getClassFont();
 		classes.setFont(font);
 		classes.setHorizontalAlignment(JLabel.CENTER);
 		classes.setVerticalAlignment(JLabel.CENTER);
@@ -165,8 +214,8 @@ public class CreatorTabVillainFront extends CreatorTab implements ActionListener
 		
 		description1 = new JLabel(villainFrontCard.getDescription1());
 		description1.setBounds(64, 921, 680 - 64, 953 - 921);
-		description1.setForeground(Color.BLACK);
-		font = new Font("Comic Book", Font.PLAIN, 30);
+		description1.setForeground(villainFrontCard.getDescriptionFontColor());
+		font = villainFrontCard.getDescriptionFont();
 		description1.setFont(font);
 		description1.setHorizontalAlignment(JLabel.CENTER);
 		description1.setVerticalAlignment(JLabel.CENTER);
@@ -174,8 +223,8 @@ public class CreatorTabVillainFront extends CreatorTab implements ActionListener
 		
 		description2 = new JLabel(villainFrontCard.getDescription2());
 		description2.setBounds(64, 955, 680 - 64, 987 - 955);
-		description2.setForeground(Color.BLACK);
-		font = new Font("Comic Book", Font.PLAIN, 30);
+		description2.setForeground(villainFrontCard.getDescriptionFontColor());
+		font = villainFrontCard.getDescriptionFont();
 		description2.setFont(font);
 		description2.setHorizontalAlignment(JLabel.CENTER);
 		description2.setVerticalAlignment(JLabel.CENTER);
@@ -183,20 +232,20 @@ public class CreatorTabVillainFront extends CreatorTab implements ActionListener
 		
 		name = new JLabel(villainFrontCard.getName());
 		name.setBounds(70, 40, 600 - 70, 160 - 40);
-		name.setForeground(Color.WHITE);
-		font = new Font("SF Ferretopia", Font.PLAIN, 110);
+		name.setForeground(villainFrontCard.getNameFontColor());
+		font = villainFrontCard.getNameFont();
 		name.setFont(font);
 		name.setHorizontalAlignment(JLabel.LEFT);
 		name.setVerticalAlignment(JLabel.CENTER);
 		getImagePane().add(name);
 		
 		healthPoints = new JLabel(villainFrontCard.getHealthPoints());
-		font = new Font("SF Ferretopia", Font.PLAIN, 110);
+		font = villainFrontCard.getHpFont();
 		healthPoints.setFont(font);
 		healthPoints.setHorizontalAlignment(JLabel.RIGHT);
 		healthPoints.setVerticalAlignment(JLabel.CENTER);
 		healthPoints.setBounds(540, 40, 685 - 540, 160 - 40);
-		healthPoints.setForeground(Color.WHITE);
+		healthPoints.setForeground(villainFrontCard.getHpFontColor());
 		getImagePane().add(healthPoints);
 		
 		img = new ImageIcon("images" + File.separator + "villainfront" + File.separator + "nemesisshine.png");
@@ -276,7 +325,7 @@ public class CreatorTabVillainFront extends CreatorTab implements ActionListener
 		
 		if (e.getSource().equals(portraitButton))
 		{
-			JFileChooser chooser = new JFileChooser();
+			JFileChooser chooser = getFrame().getChooser();
 			int outcome = chooser.showOpenDialog(this);
 			
 			if (outcome == JFileChooser.APPROVE_OPTION)
@@ -292,7 +341,7 @@ public class CreatorTabVillainFront extends CreatorTab implements ActionListener
 		
 		if (e.getSource().equals(nemesisButton))
 		{
-			JFileChooser chooser = new JFileChooser();
+			JFileChooser chooser = getFrame().getChooser();
 			int outcome = chooser.showOpenDialog(this);
 			
 			if (outcome == JFileChooser.APPROVE_OPTION)
@@ -302,6 +351,92 @@ public class CreatorTabVillainFront extends CreatorTab implements ActionListener
 				Image image = getScaledImage(ii.getImage(), 113, 113);
 				ii = new ImageIcon(image);
 				nemesisImage.setIcon(ii);
+			}
+		}
+		
+		if (e.getSource().equals(nameFontButton))
+		{
+			JFontChooser chooser = new JFontChooser();
+			chooser.setSelectedFont(name.getFont());
+			int outcome = chooser.showDialog(this);
+			
+			if (outcome == JFileChooser.APPROVE_OPTION)
+			{
+				name.setFont(chooser.getSelectedFont());
+			}
+		}
+		
+		if (e.getSource().equals(nameFontColorButton))
+		{
+			Color c = selectColor(name.getForeground());
+			if (c != null)
+			{
+				name.setForeground(c);
+			}
+		}
+		
+		if (e.getSource().equals(hpFontButton))
+		{
+			JFontChooser chooser = new JFontChooser();
+			chooser.setSelectedFont(healthPoints.getFont());
+			int outcome = chooser.showDialog(this);
+			
+			if (outcome == JFileChooser.APPROVE_OPTION)
+			{
+				healthPoints.setFont(chooser.getSelectedFont());
+			}
+		}
+		
+		if (e.getSource().equals(hpFontColorButton))
+		{
+			Color c = selectColor(healthPoints.getForeground());
+			if (c != null)
+			{
+				healthPoints.setForeground(c);
+			}
+		}
+		
+		if (e.getSource().equals(classFontButton))
+		{
+			JFontChooser chooser = new JFontChooser();
+			chooser.setSelectedFont(classes.getFont());
+			int outcome = chooser.showDialog(this);
+			
+			if (outcome == JFileChooser.APPROVE_OPTION)
+			{
+				classes.setFont(chooser.getSelectedFont());
+			}
+		}
+		
+		if (e.getSource().equals(classFontColorButton))
+		{
+			Color c = selectColor(classes.getForeground());
+			if (c != null)
+			{
+				classes.setForeground(c);
+			}
+		}
+		
+		if (e.getSource().equals(descriptionFontButton))
+		{
+			JFontChooser chooser = new JFontChooser();
+			chooser.setSelectedFont(description1.getFont());
+			int outcome = chooser.showDialog(this);
+			
+			if (outcome == JFileChooser.APPROVE_OPTION)
+			{
+				description1.setFont(chooser.getSelectedFont());
+				description2.setFont(chooser.getSelectedFont());
+			}
+		}
+		
+		if (e.getSource().equals(descriptionFontColorButton))
+		{
+			Color c = selectColor(description1.getForeground());
+			if (c != null)
+			{
+				description1.setForeground(c);
+				description2.setForeground(c);
 			}
 		}
 		
@@ -340,6 +475,23 @@ public class CreatorTabVillainFront extends CreatorTab implements ActionListener
 		villainFrontCard.setDescription2(txtDescriptionLine2.getText());
 		villainFrontCard.setClassColor(classesUnderlay.getBackground());
 		villainFrontCard.setColor(descriptionUnderlay.getBackground());
+		
+		villainFrontCard.setNameFont(name.getFont());
+		villainFrontCard.setNameFontColor(name.getForeground());
+		villainFrontCard.setHpFont(healthPoints.getFont());
+		villainFrontCard.setHpFontColor(healthPoints.getForeground());
+		villainFrontCard.setClassFont(classes.getFont());
+		villainFrontCard.setClassFontColor(classes.getForeground());
+		villainFrontCard.setDescriptionFont(description1.getFont());
+		villainFrontCard.setDescriptionFontColor(description1.getForeground());
+	}
+
+	public JButton getNameFontButton() {
+		return nameFontButton;
+	}
+
+	public void setNameFontButton(JButton nameFontButton) {
+		this.nameFontButton = nameFontButton;
 	}
 	
 }

@@ -1,6 +1,7 @@
 package uk.co.fostorial.sotm.structure;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.io.File;
 
 public class HeroCard extends Card {
@@ -16,6 +17,17 @@ public class HeroCard extends Card {
 	
 	private Color nameColor;
 	private Color classColor;
+	
+	private Font nameFont;
+	private Color nameFontColor;
+	private Font hpFont;
+	private Color hpFontColor;
+	private Font classFont;
+	private Color classFontColor;
+	private Font descriptionFont;
+	private Color descriptionFontColor;
+	private Font quoteFont;
+	private Color quoteFontColor;
 
 	public HeroCard(String name, Integer id) {
 		super(Card.HERO_CARD, id);
@@ -36,6 +48,17 @@ public class HeroCard extends Card {
 		quoteString1 = "\"Once in while you just";
 		quoteString2 = "gotta improvise!\"";
 		issueString = "- Citizen Snips, The Crab Cometh #4";
+		
+		nameFontColor = Color.white;
+		nameFont = new Font("SF Ferretopia", Font.PLAIN, 50);
+		hpFontColor = Color.black;
+		hpFont = new Font("SF Ferretopia", Font.PLAIN, 70);
+		classFontColor = Color.black;
+		classFont = new Font("Comic Book", Font.PLAIN, 30);
+		descriptionFontColor = Color.black;
+		descriptionFont = new Font("Comic Book", Font.PLAIN, 24);
+		quoteFontColor = Color.black;
+		quoteFont = new Font("Comic Book", Font.PLAIN, 20);
 	}
 
 	public String getXML()
@@ -56,6 +79,18 @@ public class HeroCard extends Card {
 		xml += "  <issuestring>" + getIssueString() + "</issuestring>\n";
 		xml += "  <classcolour>" + getClassColor().getRGB() + "</classcolour>\n";
 		xml += "  <namecolour>" + getNameColor().getRGB() + "</namecolour>\n";
+		
+		xml += "  <namefontcolor>" + getNameFontColor().getRGB() + "</namefontcolor>\n";
+		xml += "  <namefont>" + getNameFont().getFontName() + ";" + getNameFont().getStyle() + ";" + getNameFont().getSize() + "</namefont>\n";
+		xml += "  <hpfontcolor>" + getHpFontColor().getRGB() + "</hpfontcolor>\n";
+		xml += "  <hpfont>" + getHpFont().getFontName() + ";" + getHpFont().getStyle() + ";" + getHpFont().getSize() + "</hpfont>\n";
+		xml += "  <classfontcolor>" + getClassFontColor().getRGB() + "</classfontcolor>\n";
+		xml += "  <classfont>" + getClassFont().getFontName() + ";" + getClassFont().getStyle() + ";" + getClassFont().getSize() + "</classfont>\n";
+		xml += "  <descriptionfontcolor>" + getDescriptionFontColor().getRGB() + "</descriptionfontcolor>\n";
+		xml += "  <descriptionfont>" + getDescriptionFont().getFontName() + ";" + getDescriptionFont().getStyle() + ";" + getDescriptionFont().getSize() + "</descriptionfont>\n";
+		xml += "  <quotefontcolor>" + getQuoteFontColor().getRGB() + "</quotefontcolor>\n";
+		xml += "  <quotefont>" + getQuoteFont().getFontName() + ";" + getQuoteFont().getStyle() + ";" + getQuoteFont().getSize() + "</quotefont>\n";
+		
 		xml += " </herocard>\n";
 		return xml;
 	}
@@ -124,4 +159,85 @@ public class HeroCard extends Card {
 		this.classColor = classColor;
 	}
 
+	public Font getNameFont() {
+		return nameFont;
+	}
+
+	public void setNameFont(Font nameFont) {
+		this.nameFont = nameFont;
+	}
+
+	public Color getNameFontColor() {
+		return nameFontColor;
+	}
+
+	public void setNameFontColor(Color nameFontColor) {
+		this.nameFontColor = nameFontColor;
+	}
+
+	public Font getHpFont() {
+		return hpFont;
+	}
+
+	public void setHpFont(Font hpFont) {
+		this.hpFont = hpFont;
+	}
+
+	public Color getHpFontColor() {
+		return hpFontColor;
+	}
+
+	public void setHpFontColor(Color hpFontColor) {
+		this.hpFontColor = hpFontColor;
+	}
+
+	public Font getClassFont() {
+		return classFont;
+	}
+
+	public void setClassFont(Font classFont) {
+		this.classFont = classFont;
+	}
+
+	public Color getClassFontColor() {
+		return classFontColor;
+	}
+
+	public void setClassFontColor(Color classFontColor) {
+		this.classFontColor = classFontColor;
+	}
+
+	public Font getDescriptionFont() {
+		return descriptionFont;
+	}
+
+	public void setDescriptionFont(Font descriptionFont) {
+		this.descriptionFont = descriptionFont;
+	}
+
+	public Color getDescriptionFontColor() {
+		return descriptionFontColor;
+	}
+
+	public void setDescriptionFontColor(Color descriptionFontColor) {
+		this.descriptionFontColor = descriptionFontColor;
+	}
+
+	public Font getQuoteFont() {
+		return quoteFont;
+	}
+
+	public void setQuoteFont(Font quoteFont) {
+		this.quoteFont = quoteFont;
+	}
+
+	public Color getQuoteFontColor() {
+		return quoteFontColor;
+	}
+
+	public void setQuoteFontColor(Color quoteFontColor) {
+		this.quoteFontColor = quoteFontColor;
+	}
+
+	
 }

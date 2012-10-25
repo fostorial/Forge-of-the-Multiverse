@@ -1,10 +1,16 @@
 package uk.co.fostorial.sotm.deck;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -316,7 +322,7 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 	public void saveDeck()
 	{
 		try {
-			JFileChooser chooser = new JFileChooser();
+			JFileChooser chooser = frame.getChooser();
 			int outcome = chooser.showSaveDialog(this);
 			
 			if (outcome == JFileChooser.APPROVE_OPTION)
@@ -365,7 +371,7 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 	{
 		CreatorTab creator = null;
 		
-		JFileChooser chooser = new JFileChooser();
+		JFileChooser chooser = frame.getChooser();
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int outcome = chooser.showSaveDialog(frame);
 		
@@ -416,6 +422,383 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 					}
 				}
 			}
+		}
+		
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+	}
+	
+	public void exportDeckPagesPNG()
+	{
+		exportDeckPages("png");
+	}
+	
+	public void exportDeckPagesJPG()
+	{
+		exportDeckPages("jpg");
+	}
+	
+	private void exportDeckPages(String type)
+	{
+		CreatorTab creator = null;
+		
+		JFileChooser chooser = frame.getChooser();
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		chooser.validate();
+		int outcome = chooser.showDialog(frame, "Select");
+		
+		if (outcome == JFileChooser.APPROVE_OPTION)
+		{
+			/* Variable used to split pages */
+			int currentCard = 0;
+			int currentPage = 0;
+			
+			/* sort into correct types */
+			HeroFrontCard heroFront = null;
+			HeroBackCard heroBack = null;
+			List<VillainFrontCard> villainFronts = new ArrayList<VillainFrontCard>();
+			List<Card> cards = new ArrayList<Card>();
+			BackCard cardBack = null;
+			VillainFrontCard villainFront = null;
+			VillainFrontCard villainBack = null;
+			
+			for (Card c : deck.getCards())
+			{
+				if (c != null)
+				{
+					if (c instanceof HeroFrontCard)
+					{
+						heroFront = (HeroFrontCard)c;
+					}
+					else if (c instanceof HeroBackCard)
+					{
+						heroBack = (HeroBackCard)c;
+					}
+					else if (c instanceof BackCard)
+					{
+						cardBack = (BackCard)c;
+					}
+					else if (c instanceof HeroCard || c instanceof VillainCard)
+					{
+						cards.add(c);
+					}
+					else if (c instanceof VillainFrontCard)
+					{
+						villainFronts.add((VillainFrontCard)c);
+					}
+					
+				}
+			}
+			
+			if (villainFronts.size() == 2)
+			{
+				villainFront = villainFronts.get(0);
+				villainBack = villainFronts.get(1);
+			}
+			
+			/* Print cards 9 per page */
+			BufferedImage outputImage = null;
+			Graphics2D g = null;
+			int cardWidth = 0;
+			int cardHeight = 0;
+			
+			if (heroFront != null)
+			{
+				creator = new CreatorTabHeroFront(frame, heroFront);
+				BufferedImage image = creator.getImage();
+		        
+				int imageType = BufferedImage.TYPE_INT_RGB;
+		        outputImage = new BufferedImage((image.getWidth() * 3) + (4 * 20), (image.getHeight() * 3) + (4 * 20), imageType);
+		        g = outputImage.createGraphics();
+		        g.setBackground(Color.white);
+				g.setColor(Color.white);
+				g.fillRect(0, 0, outputImage.getWidth(), outputImage.getHeight());
+				
+		        g.drawImage(image, 20, 20, null);
+		        
+		        cardWidth = image.getWidth();
+		        cardHeight = image.getHeight();
+			}
+			
+			if (villainFront != null)
+			{
+				creator = new CreatorTabVillainFront(frame, villainFront);
+				BufferedImage image = creator.getImage();
+		        
+				int imageType = BufferedImage.TYPE_INT_RGB;
+		        outputImage = new BufferedImage((image.getWidth() * 3) + (4 * 20), (image.getHeight() * 3) + (4 * 20), imageType);
+		        g = outputImage.createGraphics();
+		        g.setBackground(Color.white);
+				g.setColor(Color.white);
+				g.fillRect(0, 0, outputImage.getWidth(), outputImage.getHeight());
+		        
+		        g.drawImage(image, 20, 20, null);
+		        
+		        cardWidth = image.getWidth();
+		        cardHeight = image.getHeight();
+			}
+				
+			int x = 20 + cardWidth + 20;
+			int y = 20;
+			for (Card c : cards)
+			{
+				if (c != null)
+				{
+					if (c instanceof HeroFrontCard)
+					{
+						creator = new CreatorTabHeroFront(frame, (HeroFrontCard)c);
+					}
+					
+					if (c instanceof HeroBackCard)
+					{
+						creator = new CreatorTabHeroBack(frame, (HeroBackCard)c);
+					}
+					
+					if (c instanceof BackCard)
+					{
+						creator = new CreatorTabCardBack(frame, (BackCard)c);
+					}
+					
+					if (c instanceof HeroCard)
+					{
+						creator = new CreatorTabHeroCard(frame, (HeroCard)c);
+					}
+					
+					if (c instanceof VillainFrontCard)
+					{
+						creator = new CreatorTabVillainFront(frame, (VillainFrontCard)c);
+					}
+					
+					if (c instanceof VillainCard)
+					{
+						creator = new CreatorTabVillainCard(frame, (VillainCard)c);
+					}
+				}
+				g.drawImage(creator.getImage(), x, y, null);
+				x += cardWidth + 20;
+				
+				if (x >= (int)((3 * cardWidth) + (4 * 20)))
+				{
+					x = 20;
+					y += cardHeight + 20; 
+				}
+				
+				currentCard++;
+				
+				/* Save and reset page */
+				if (currentCard >= 9 || (currentCard + (currentPage * 9)) >= cards.size())
+				{
+					try
+					{
+						File f = new File(chooser.getSelectedFile().getAbsolutePath() + File.separator + deck.getName() + (int)(currentPage + 1) + "." + type);
+						ImageIO.write(outputImage, type, f);
+						
+						x = 20;
+						y = 20;
+						
+						currentPage++;
+						currentCard = 0;
+						
+						g.fillRect(0, 0, outputImage.getWidth(), outputImage.getHeight());
+					}
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+			
+			/* Write card backs */
+			int filledPages = currentPage;
+			
+			x = 20 + cardWidth + 20 + cardWidth + 20;
+			y = 20;
+			
+			if (heroBack != null)
+			{
+				creator = new CreatorTabHeroBack(frame, heroBack);
+				BufferedImage image = creator.getImage();
+		        
+				g.fillRect(0, 0, outputImage.getWidth(), outputImage.getHeight());
+				
+		        g.drawImage(image, x, y, null);
+			}
+			
+			if (villainBack != null)
+			{
+				creator = new CreatorTabVillainFront(frame, villainBack);
+				BufferedImage image = creator.getImage();
+		        
+				g.fillRect(0, 0, outputImage.getWidth(), outputImage.getHeight());
+		        
+		        g.drawImage(image, x, y, null);
+			}
+				
+			currentCard = 0;
+			currentPage = 0;
+			
+			creator = new CreatorTabCardBack(frame, cardBack);
+			BufferedImage cardBackImage = creator.getImage();
+			
+			for (int i = 0; i < cards.size(); i++)
+			{
+				
+				if (currentCard == 0 && currentPage == 0)
+				{
+					x = 20 + cardWidth + 20;
+				}
+				
+				if (currentCard == 1 && currentPage == 0)
+				{
+					x = 20;
+				}
+				
+				if (currentCard == 2 && currentPage == 0)
+				{
+					x = 20;
+					y += cardHeight + 20;
+				}
+				
+				g.drawImage(cardBackImage, x, y, null);
+				x += cardWidth + 20;
+				
+				if (x >= (int)((3 * cardWidth) + (4 * 20)))
+				{
+					x = 20;
+					y += cardHeight + 20; 
+				}
+				
+				currentCard++;
+				
+				/* Save and reset page */
+				if (currentCard >= 9 || (currentCard + (currentPage * 9)) >= cards.size())
+				{
+					try
+					{
+						File f = new File(chooser.getSelectedFile().getAbsolutePath() + File.separator + deck.getName() + (int)(currentPage + 1 + filledPages) + "." + type);
+						ImageIO.write(outputImage, type, f);
+						
+						x = 20;
+						y = 20;
+						
+						currentPage++;
+						currentCard = 0;
+						
+						g.fillRect(0, 0, outputImage.getWidth(), outputImage.getHeight());
+					}
+					catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+		
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		chooser.validate();
+	}
+	
+	public void exportToText()
+	{
+		try {
+			JFileChooser chooser = frame.getChooser();
+			int outcome = chooser.showSaveDialog(this);
+			
+			if (outcome == JFileChooser.APPROVE_OPTION)
+			{
+				File f = chooser.getSelectedFile();
+				if (f.getAbsolutePath().toLowerCase().endsWith(".txt") == false)
+				{
+					f = new File(f.getAbsolutePath() + ".txt");
+				}
+				
+				FileWriter fstream = new FileWriter(f);
+				BufferedWriter out = new BufferedWriter(fstream);
+				  
+				if (deck instanceof HeroDeck)
+				{
+					HeroFrontCard front = null;
+					HeroBackCard back = null;
+					List<HeroCard> cards = new ArrayList<HeroCard>();
+					
+					for (Card c : deck.getCards())
+					{
+						if (c instanceof HeroFrontCard)
+						{
+							front = (HeroFrontCard)c;
+						}
+						else if (c instanceof HeroBackCard)
+						{
+							back = (HeroBackCard)c;
+						}
+						else if (c instanceof HeroCard)
+						{
+							cards.add((HeroCard)c);
+						}
+					}
+					
+					out.write("Name: " + front.getName() + "\n");
+					out.write("Health Points: " + front.getHealthPoints() + "\n");
+					out.write("Power: " + front.getPowerName() + " - " + front.getPowerText() + "\n");
+					out.write("Incapacitated Power 1: " + back.getAbilityLine1() + " " + back.getAbilityLine2() + "\n");
+					out.write("Incapacitated Power 2: " + back.getAbilityLine3() + " " + back.getAbilityLine4() + "\n");
+					out.write("Incapacitated Power 3: " + back.getAbilityLine5() + " " + back.getAbilityLine6() + "\n\n");
+					
+					out.write("Cards" + "\n\n");
+					for (HeroCard c : cards)
+					{
+						out.write("Name: " + c.getName() + "\n");
+						out.write("Health Points: " + c.getHealthPoints() + "\n");
+						out.write("Classes: " + c.getClasses() + "\n");
+						out.write("Card Text: " + c.getCardText() + "\n");
+						out.write("Quote: " + c.getQuoteString1() + " " + c.getQuoteString2() + " " + c.getIssueString() + "\n");
+						out.write("Number in Deck: " + c.getNumberInDeck() + "\n\n");
+					}
+				}
+				
+				if (deck instanceof VillainDeck)
+				{
+					VillainFrontCard front = null;
+					VillainFrontCard back = null;
+					List<VillainCard> cards = new ArrayList<VillainCard>();
+					
+					for (Card c : deck.getCards())
+					{
+						if (c instanceof VillainFrontCard && front == null)
+						{
+							front = (VillainFrontCard)c;
+						}
+						else if (c instanceof VillainFrontCard)
+						{
+							back = (VillainFrontCard)c;
+						}
+						else if (c instanceof VillainCard)
+						{
+							cards.add((VillainCard)c);
+						}
+					}
+					
+					out.write("Name: " + front.getName() + "\n");
+					out.write("Side 1: Health Points: " + front.getHealthPoints() + "\n");
+					out.write("Side 1: Description: " + front.getDescription1() + " " + front.getDescription2() + "\n");
+					out.write("Side 2: Health Points: " + back.getHealthPoints() + "\n");
+					out.write("Side 2: Description: " + back.getDescription1() + " " + back.getDescription2() + "\n");
+					
+					out.write("Cards" + "\n\n");
+					for (VillainCard c : cards)
+					{
+						out.write("Name: " + c.getName() + "\n");
+						out.write("Health Points: " + c.getHealthPoints() + "\n");
+						out.write("Classes: " + c.getClasses() + "\n");
+						out.write("Card Text: " + c.getCardText() + "\n");
+						out.write("Quote: " + c.getQuoteString1() + " " + c.getQuoteString2() + " " + c.getIssueString() + "\n");
+						out.write("Number in Deck: " + c.getNumberInDeck() + "\n\n");
+					}
+				}
+				
+				out.close();
+			}
+		} catch (IOException e) {
+		    e.printStackTrace();
 		}
 	}
 }

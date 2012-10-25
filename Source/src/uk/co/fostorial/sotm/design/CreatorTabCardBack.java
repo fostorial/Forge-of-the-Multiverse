@@ -103,7 +103,7 @@ public class CreatorTabCardBack extends CreatorTab implements ActionListener {
 		
 		if (e.getSource().equals(portraitButton))
 		{
-			JFileChooser chooser = new JFileChooser();
+			JFileChooser chooser = getFrame().getChooser();
 			int outcome = chooser.showOpenDialog(this);
 			
 			if (outcome == JFileChooser.APPROVE_OPTION)

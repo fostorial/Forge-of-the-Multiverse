@@ -1,6 +1,7 @@
 package uk.co.fostorial.sotm.structure;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.io.File;
 
 public class HeroBackCard extends Card {
@@ -12,6 +13,9 @@ public class HeroBackCard extends Card {
 	private String abilityLine4;
 	private String abilityLine5;
 	private String abilityLine6;
+	
+	private Font textFont;
+	private Color textFontColor;
 
 	public HeroBackCard(String name, Integer id) {
 		super(Card.HERO_BACK, id);
@@ -28,6 +32,9 @@ public class HeroBackCard extends Card {
 		abilityLine4 = "Ability 2 Line 2";
 		abilityLine5 = "Ability 3 Line 1";
 		abilityLine6 = "Ability 3 Line 2";
+		
+		textFontColor = Color.black;
+		textFont = new Font("Comic Book", Font.PLAIN, 23);
 	}
 
 	public String getXML()
@@ -47,6 +54,9 @@ public class HeroBackCard extends Card {
 		xml += "  <abilityline5>" + getAbilityLine5() + "</abilityline5>\n";
 		xml += "  <abilityline6>" + getAbilityLine6() + "</abilityline6>\n";
 		xml += "  <abilitycolor>" + getTextColour().getRGB() + "</abilitycolor>\n";
+		xml += "  <textfontcolor>" + getTextFontColor().getRGB() + "</textfontcolor>\n";
+		xml += "  <textfont>" + getTextFont().getFontName() + ";" + getTextFont().getStyle() + ";" + getTextFont().getSize() + "</textfont>\n";
+		
 		xml += " </herobackcard>\n";
 		return xml;
 	}
@@ -105,6 +115,22 @@ public class HeroBackCard extends Card {
 
 	public void setAbilityLine6(String abilityLine6) {
 		this.abilityLine6 = abilityLine6;
+	}
+
+	public Font getTextFont() {
+		return textFont;
+	}
+
+	public void setTextFont(Font textFont) {
+		this.textFont = textFont;
+	}
+
+	public Color getTextFontColor() {
+		return textFontColor;
+	}
+
+	public void setTextFontColor(Color textFontColor) {
+		this.textFontColor = textFontColor;
 	}
 	
 }

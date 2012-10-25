@@ -40,6 +40,9 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 	private JMenuItem exportExportCurrentTabJPG;
 	private JMenuItem exportExportDeckIndividuallyPNG;
 	private JMenuItem exportExportDeckIndividuallyJPG;
+	private JMenuItem exportExportDeckFullPNG;
+	private JMenuItem exportExportDeckFullJPG;
+	private JMenuItem exportExportToText;
 	
 	private JMenu help;
 	private JMenuItem version;
@@ -118,6 +121,27 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 		        KeyEvent.VK_J, KeyEvent.CTRL_DOWN_MASK);
 		//exportExportDeckIndividuallyPNG.setAccelerator(key);
 		export.add(exportExportDeckIndividuallyJPG);
+		
+		exportExportDeckFullPNG = new JMenuItem("Export Deck to PNG");
+		exportExportDeckFullPNG.addActionListener(this);
+		key = KeyStroke.getKeyStroke(
+		        KeyEvent.VK_J, KeyEvent.CTRL_DOWN_MASK);
+		//exportExportDeckIndividuallyPNG.setAccelerator(key);
+		export.add(exportExportDeckFullPNG);
+		
+		exportExportDeckFullJPG = new JMenuItem("Export Deck to JPG");
+		exportExportDeckFullJPG.addActionListener(this);
+		key = KeyStroke.getKeyStroke(
+		        KeyEvent.VK_J, KeyEvent.CTRL_DOWN_MASK);
+		//exportExportDeckIndividuallyPNG.setAccelerator(key);
+		export.add(exportExportDeckFullJPG);
+		
+		exportExportToText = new JMenuItem("Export Deck to Text");
+		exportExportToText.addActionListener(this);
+		key = KeyStroke.getKeyStroke(
+		        KeyEvent.VK_J, KeyEvent.CTRL_DOWN_MASK);
+		//exportExportDeckIndividuallyPNG.setAccelerator(key);
+		export.add(exportExportToText);
 		
 		file.add(export);
 		
@@ -308,9 +332,36 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 			}
 		}
 		
+		if (e.getSource().equals(exportExportDeckFullPNG))
+		{
+			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
+			{
+				DeckManager manager = (DeckManager)frame.getTabbedPane().getSelectedComponent();
+				manager.exportDeckPagesPNG();
+			}
+		}
+		
+		if (e.getSource().equals(exportExportDeckFullJPG))
+		{
+			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
+			{
+				DeckManager manager = (DeckManager)frame.getTabbedPane().getSelectedComponent();
+				manager.exportDeckPagesJPG();
+			}
+		}
+		
+		if (e.getSource().equals(exportExportToText))
+		{
+			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
+			{
+				DeckManager manager = (DeckManager)frame.getTabbedPane().getSelectedComponent();
+				manager.exportToText();
+			}
+		}
+		
 		if (e.getSource().equals(version))
 		{
-			JOptionPane.showMessageDialog(frame, "v0.2", "Version Number", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(frame, GlobalVariables.VERSION, "Version Number", JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
 
@@ -348,6 +399,9 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 		exportExportDeckIndividuallyJPG.setEnabled(true);
 		exportExportDeckIndividuallyJPG.setVisible(true);
 		
+		exportExportToText.setEnabled(true);
+		exportExportToText.setVisible(true);
+		
 	}
 	
 	public void cardPaneSelected()
@@ -375,6 +429,9 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 		
 		exportExportDeckIndividuallyJPG.setEnabled(false);
 		exportExportDeckIndividuallyJPG.setVisible(false);
+		
+		exportExportToText.setEnabled(false);
+		exportExportToText.setVisible(false);
 	}
 	
 	public void noPaneSelected()
@@ -402,5 +459,8 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 		
 		exportExportDeckIndividuallyJPG.setEnabled(false);
 		exportExportDeckIndividuallyJPG.setVisible(false);
+		
+		exportExportToText.setEnabled(false);
+		exportExportToText.setVisible(false);
 	}
 }

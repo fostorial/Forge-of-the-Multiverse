@@ -17,6 +17,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
+import say.swing.JFontChooser;
 import uk.co.fostorial.sotm.CreatorFrame;
 import uk.co.fostorial.sotm.structure.HeroFrontCard;
 
@@ -49,6 +50,14 @@ public class CreatorTabHeroFront extends CreatorTab implements ActionListener {
 	private JButton updateButton;
 	private JButton saveButton;
 	private JButton cancelButton;
+	private JButton nameFontButton;
+	private JButton nameFontColorButton;
+	private JButton hpFontButton;
+	private JButton hpFontColorButton;
+	private JButton powerFontButton;
+	private JButton powerFontColorButton;
+	private JButton powerNameFontButton;
+	private JButton powerNameFontColorButton;
 	
 	private HeroFrontCard heroFrontCard;
 	
@@ -78,64 +87,104 @@ public class CreatorTabHeroFront extends CreatorTab implements ActionListener {
 		
 		txtHeroName = new JTextField(heroFrontCard.getName());
 		txtHeroName.setBorder(BorderFactory.createTitledBorder("Hero Name"));
-		txtHeroName.setBounds(5, 0, 250, 50);
+		txtHeroName.setBounds(5, 10, 250, 50);
 		txtHeroName.setHorizontalAlignment(JTextField.CENTER);
 		txtHeroName.getDocument().addDocumentListener(new PropertiesDocumentListener(name));
 		getProperties().add(txtHeroName);
 		
+		nameFontButton = new JButton("Change Name Font");
+		nameFontButton.setBounds(5, txtHeroName.getBounds().y + txtHeroName.getBounds().height + 10, 250, 25);
+		nameFontButton.addActionListener(this);
+		getProperties().add(nameFontButton);
+		
+		nameFontColorButton = new JButton("Change Name Color");
+		nameFontColorButton.setBounds(5, nameFontButton.getBounds().y + nameFontButton.getBounds().height + 10, 250, 25);
+		nameFontColorButton.addActionListener(this);
+		getProperties().add(nameFontColorButton);
+		
 		txtHealthPoints = new JTextField(heroFrontCard.getHealthPoints());
 		txtHealthPoints.setBorder(BorderFactory.createTitledBorder("Health Points"));
-		txtHealthPoints.setBounds(5, 60, 250, 50);
+		txtHealthPoints.setBounds(5, nameFontColorButton.getBounds().y + nameFontColorButton.getBounds().height + 10, 250, 50);
 		txtHealthPoints.setHorizontalAlignment(JTextField.CENTER);
 		txtHealthPoints.getDocument().addDocumentListener(new PropertiesDocumentListener(healthPoints));
 		getProperties().add(txtHealthPoints);
 		
+		hpFontButton = new JButton("Change HP Font");
+		hpFontButton.setBounds(5, txtHealthPoints.getBounds().y + txtHealthPoints.getBounds().height + 10, 250, 25);
+		hpFontButton.addActionListener(this);
+		getProperties().add(hpFontButton);
+		
+		hpFontColorButton = new JButton("Change HP Color");
+		hpFontColorButton.setBounds(5, hpFontButton.getBounds().y + hpFontButton.getBounds().height + 10, 250, 25);
+		hpFontColorButton.addActionListener(this);
+		getProperties().add(hpFontColorButton);
+		
 		txtPowerName = new JTextField(heroFrontCard.getPowerName());
 		txtPowerName.setBorder(BorderFactory.createTitledBorder("Power Name"));
-		txtPowerName.setBounds(5, 120, 250, 50);
+		txtPowerName.setBounds(5, hpFontColorButton.getBounds().y + hpFontColorButton.getBounds().height + 10, 250, 50);
 		txtPowerName.setHorizontalAlignment(JTextField.CENTER);
 		txtPowerName.getDocument().addDocumentListener(new PropertiesDocumentListener(powerName));
 		getProperties().add(txtPowerName);
 		
+		powerNameFontButton = new JButton("Change Power Name Font");
+		powerNameFontButton.setBounds(5, txtPowerName.getBounds().y + txtPowerName.getBounds().height + 10, 250, 25);
+		powerNameFontButton.addActionListener(this);
+		getProperties().add(powerNameFontButton);
+		
+		powerNameFontColorButton = new JButton("Change Power Name Color");
+		powerNameFontColorButton.setBounds(5, powerNameFontButton.getBounds().y + powerNameFontButton.getBounds().height + 10, 250, 25);
+		powerNameFontColorButton.addActionListener(this);
+		getProperties().add(powerNameFontColorButton);
+		
 		txtPowerLine = new JTextArea(heroFrontCard.getPowerText());
 		txtPowerLine.setBorder(BorderFactory.createTitledBorder("Power Text"));
-		txtPowerLine.setBounds(5, 180, 250, 110);
+		txtPowerLine.setBounds(5, powerNameFontColorButton.getBounds().y + powerNameFontColorButton.getBounds().height + 10, 250, 110);
 		txtPowerLine.setLineWrap(true);
 		txtPowerLine.setWrapStyleWord(true);
 		txtPowerLine.getDocument().addDocumentListener(new TextareaPropertiesDocumentListener(powerText));
 		getProperties().add(txtPowerLine);
 		
+		powerFontButton = new JButton("Change Power Font");
+		powerFontButton.setBounds(5, txtPowerLine.getBounds().y + txtPowerLine.getBounds().height + 10, 250, 25);
+		powerFontButton.addActionListener(this);
+		getProperties().add(powerFontButton);
+		
+		powerFontColorButton = new JButton("Change Power Color");
+		powerFontColorButton.setBounds(5, powerFontButton.getBounds().y + powerFontButton.getBounds().height + 10, 250, 25);
+		powerFontColorButton.addActionListener(this);
+		getProperties().add(powerFontColorButton);
+		
 		textBGColour = new JButton("Set Text Backing Colour");
-		textBGColour.setBounds(5, 300, 250, 25);
+		textBGColour.setBounds(5, txtPowerLine.getBounds().y + txtPowerLine.getBounds().height + 10, 250, 25);
 		textBGColour.addActionListener(this);
 		getProperties().add(textBGColour);
 		
 		portraitButton = new JButton("Set Portrait Image");
-		portraitButton.setBounds(5, 330, 250, 25);
+		portraitButton.setBounds(5, textBGColour.getBounds().y + textBGColour.getBounds().height + 10, 250, 25);
 		portraitButton.addActionListener(this);
 		getProperties().add(portraitButton);
 		
 		nemesisButton = new JButton("Set Nemesis Image");
-		nemesisButton.setBounds(5, 360, 250, 25);
+		nemesisButton.setBounds(5, portraitButton.getBounds().y + portraitButton.getBounds().height + 10, 250, 25);
 		nemesisButton.addActionListener(this);
 		getProperties().add(nemesisButton);
 		
 		updateButton = new JButton("Update Card");
-		updateButton.setBounds(5, 390, 250, 25);
+		updateButton.setBounds(5, nemesisButton.getBounds().y + nemesisButton.getBounds().height + 10, 250, 25);
 		updateButton.addActionListener(this);
 		getProperties().add(updateButton);
 		
 		saveButton = new JButton("Save Card");
-		saveButton.setBounds(5, 420, 250, 25);
+		saveButton.setBounds(5, updateButton.getBounds().y + updateButton.getBounds().height + 10, 250, 25);
 		saveButton.addActionListener(this);
 		getProperties().add(saveButton);
 		
 		cancelButton = new JButton("Cancel");
-		cancelButton.setBounds(5, 450, 250, 25);
+		cancelButton.setBounds(5, saveButton.getBounds().y + saveButton.getBounds().height + 10, 250, 25);
 		cancelButton.addActionListener(this);
 		getProperties().add(cancelButton);
 		
-		getProperties().setPreferredSize(new Dimension(260, 490));
+		getProperties().setPreferredSize(new Dimension(260, cancelButton.getBounds().y + cancelButton.getBounds().height + 10));
 	}
 	
 	private void setupImagePane()
@@ -144,8 +193,8 @@ public class CreatorTabHeroFront extends CreatorTab implements ActionListener {
 		
 		powerName = new JLabel(heroFrontCard.getPowerName());
 		powerName.setBounds(140, 898, 580 - 140, 930 - 898);
-		powerName.setForeground(Color.BLACK);
-		Font font = new Font("Comic Book", Font.PLAIN, 30);
+		powerName.setForeground(heroFrontCard.getPowerNameFontColor());
+		Font font = heroFrontCard.getPowerNameFont();
 		powerName.setFont(font);
 		powerName.setHorizontalAlignment(JLabel.CENTER);
 		powerName.setVerticalAlignment(JLabel.CENTER);
@@ -153,8 +202,8 @@ public class CreatorTabHeroFront extends CreatorTab implements ActionListener {
 		
 		powerLabel = new JLabel("Power:");
 		powerLabel.setBounds(75, 931, 580 - 75, 960 - 931);
-		powerLabel.setForeground(Color.BLACK);
-		font = new Font("Comic Book", Font.BOLD, 23);
+		powerLabel.setForeground(heroFrontCard.getPowerFontColor());
+		font = heroFrontCard.getPowerFont();
 		powerLabel.setFont(font);
 		powerLabel.setHorizontalAlignment(JLabel.LEFT);
 		powerLabel.setVerticalAlignment(JLabel.CENTER);
@@ -162,8 +211,8 @@ public class CreatorTabHeroFront extends CreatorTab implements ActionListener {
 		
 		powerText = new JTextArea(heroFrontCard.getPowerText());
 		powerText.setBounds(175, 931, 620 - 175, 993 - 931);
-		powerText.setForeground(Color.BLACK);
-		font = new Font("Comic Book", Font.PLAIN, 23);
+		powerText.setForeground(heroFrontCard.getPowerFontColor());
+		font = heroFrontCard.getPowerFont();
 		powerText.setFont(font);
 		powerText.setOpaque(false);
 		powerText.setLineWrap(true);
@@ -172,21 +221,21 @@ public class CreatorTabHeroFront extends CreatorTab implements ActionListener {
 		getImagePane().add(powerText);
 		
 		name = new JLabel(heroFrontCard.getName());
-		name.setBounds(155, 90, 670 - 155, 200 - 90);
-		name.setForeground(Color.WHITE);
-		font = new Font("SF Ferretopia", Font.PLAIN, 100);
+		name.setBounds(155, 60, 670 - 155, 200 - 90);
+		name.setForeground(heroFrontCard.getNameFontColor());
+		font = heroFrontCard.getNameFont();
 		name.setFont(font);
 		name.setHorizontalAlignment(JLabel.CENTER);
 		name.setVerticalAlignment(JLabel.CENTER);
 		getImagePane().add(name);
 		
 		healthPoints = new JLabel(heroFrontCard.getHealthPoints());
-		font = new Font("SF Ferretopia", Font.PLAIN, 90);
+		font = heroFrontCard.getHpFont();
 		healthPoints.setFont(font);
 		healthPoints.setHorizontalAlignment(JLabel.CENTER);
 		healthPoints.setVerticalAlignment(JLabel.CENTER);
 		healthPoints.setBounds(45, 265, 160 - 45, 360 - 265);
-		healthPoints.setForeground(Color.WHITE);
+		healthPoints.setForeground(heroFrontCard.getHpFontColor());
 		getImagePane().add(healthPoints);
 		
 		img = new ImageIcon("images" + File.separator + "herofront" + File.separator + "comicbadge.png");
@@ -256,7 +305,7 @@ public class CreatorTabHeroFront extends CreatorTab implements ActionListener {
 		
 		if (e.getSource().equals(portraitButton))
 		{
-			JFileChooser chooser = new JFileChooser();
+			JFileChooser chooser = getFrame().getChooser();
 			int outcome = chooser.showOpenDialog(this);
 			
 			if (outcome == JFileChooser.APPROVE_OPTION)
@@ -272,7 +321,7 @@ public class CreatorTabHeroFront extends CreatorTab implements ActionListener {
 		
 		if (e.getSource().equals(nemesisButton))
 		{
-			JFileChooser chooser = new JFileChooser();
+			JFileChooser chooser = getFrame().getChooser();
 			int outcome = chooser.showOpenDialog(this);
 			
 			if (outcome == JFileChooser.APPROVE_OPTION)
@@ -282,6 +331,92 @@ public class CreatorTabHeroFront extends CreatorTab implements ActionListener {
 				Image image = getScaledImage(ii.getImage(), 113, 113);
 				ii = new ImageIcon(image);
 				nemesisImage.setIcon(ii);
+			}
+		}
+		
+		if (e.getSource().equals(nameFontButton))
+		{
+			JFontChooser chooser = new JFontChooser();
+			chooser.setSelectedFont(name.getFont());
+			int outcome = chooser.showDialog(this);
+			
+			if (outcome == JFileChooser.APPROVE_OPTION)
+			{
+				name.setFont(chooser.getSelectedFont());
+			}
+		}
+		
+		if (e.getSource().equals(nameFontColorButton))
+		{
+			Color c = selectColor(name.getForeground());
+			if (c != null)
+			{
+				name.setForeground(c);
+			}
+		}
+		
+		if (e.getSource().equals(hpFontButton))
+		{
+			JFontChooser chooser = new JFontChooser();
+			chooser.setSelectedFont(healthPoints.getFont());
+			int outcome = chooser.showDialog(this);
+			
+			if (outcome == JFileChooser.APPROVE_OPTION)
+			{
+				healthPoints.setFont(chooser.getSelectedFont());
+			}
+		}
+		
+		if (e.getSource().equals(hpFontColorButton))
+		{
+			Color c = selectColor(healthPoints.getForeground());
+			if (c != null)
+			{
+				healthPoints.setForeground(c);
+			}
+		}
+		
+		if (e.getSource().equals(powerFontButton))
+		{
+			JFontChooser chooser = new JFontChooser();
+			chooser.setSelectedFont(powerText.getFont());
+			int outcome = chooser.showDialog(this);
+			
+			if (outcome == JFileChooser.APPROVE_OPTION)
+			{
+				powerText.setFont(chooser.getSelectedFont());
+				powerLabel.setFont(chooser.getSelectedFont());
+			}
+		}
+		
+		if (e.getSource().equals(powerFontColorButton))
+		{
+			Color c = selectColor(powerText.getForeground());
+			if (c != null)
+			{
+				powerText.setForeground(c);
+				powerLabel.setForeground(c);
+			}
+		}
+		
+		if (e.getSource().equals(powerNameFontButton))
+		{
+			JFontChooser chooser = new JFontChooser();
+			chooser.setSelectedFont(powerName.getFont());
+			int outcome = chooser.showDialog(this);
+			
+			if (outcome == JFileChooser.APPROVE_OPTION)
+			{
+				powerName.setFont(chooser.getSelectedFont());
+			}
+		}
+		
+		if (e.getSource().equals(powerNameFontColorButton))
+		{
+			Color c = selectColor(powerName.getForeground());
+			if (c != null)
+			{
+				powerName.setForeground(c);
 			}
 		}
 		
@@ -317,5 +452,14 @@ public class CreatorTabHeroFront extends CreatorTab implements ActionListener {
 		heroFrontCard.setPowerName(txtPowerName.getText());
 		heroFrontCard.setNemesisPath(nemesisPath);
 		heroFrontCard.setPowerText(txtPowerLine.getText());
+		
+		heroFrontCard.setNameFont(name.getFont());
+		heroFrontCard.setNameFontColor(name.getForeground());
+		heroFrontCard.setHpFont(healthPoints.getFont());
+		heroFrontCard.setHpFontColor(healthPoints.getForeground());
+		heroFrontCard.setPowerFont(powerText.getFont());
+		heroFrontCard.setPowerFontColor(powerText.getForeground());
+		heroFrontCard.setPowerNameFont(powerName.getFont());
+		heroFrontCard.setPowerNameFontColor(powerName.getForeground());
 	}
 }

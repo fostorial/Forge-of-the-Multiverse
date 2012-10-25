@@ -68,7 +68,7 @@ public class CreatorTab extends JSplitPane {
 	public void saveToJPG()
 	{
 		try {
-			JFileChooser chooser = new JFileChooser();
+			JFileChooser chooser = frame.getChooser();
 			int outcome = chooser.showSaveDialog(this);
 			
 			if (outcome == JFileChooser.APPROVE_OPTION)
@@ -99,7 +99,7 @@ public class CreatorTab extends JSplitPane {
 	public void saveToPNG()
 	{
 		try {
-			JFileChooser chooser = new JFileChooser();
+			JFileChooser chooser = frame.getChooser();
 			int outcome = chooser.showSaveDialog(this);
 			
 			if (outcome == JFileChooser.APPROVE_OPTION)
@@ -385,6 +385,8 @@ public class CreatorTab extends JSplitPane {
         		crp.paintComponent(g, comps[i], crp, comps[i].getBounds());
         	}
         }
+        
+        g.dispose();
 		
 		return getScaledImage(image, w, h);
 	}
@@ -409,6 +411,10 @@ public class CreatorTab extends JSplitPane {
         		crp.paintComponent(g, comps[i], crp, comps[i].getBounds());
         	}
         }
+        
+        g.dispose();
+        crp = null;
+        System.gc();
 		
 		return image;
 	}

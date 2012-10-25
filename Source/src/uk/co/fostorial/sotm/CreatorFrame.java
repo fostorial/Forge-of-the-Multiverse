@@ -2,6 +2,7 @@ package uk.co.fostorial.sotm;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Window;
 import java.io.File;
 import java.io.IOException;
@@ -58,6 +59,8 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 	
 	private JTabbedPane tabbedPane;
 	
+	private JFileChooser chooser = new JFileChooser();
+	
 	public CreatorFrame()
 	{	
 		setupFrame();
@@ -70,6 +73,8 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 		this.setSize(500, 500);
 		this.setTitle("Forge of the Multiverse");
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		
 		creatorMenuBar = new CreatorMenuBar(this);
 		this.setJMenuBar(creatorMenuBar);
@@ -143,7 +148,7 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 	{
 		Deck deck = null;
 		try {
-			JFileChooser chooser = new JFileChooser();
+			JFileChooser chooser = getChooser();
 			int outcome = chooser.showOpenDialog(this);
 			
 			if (outcome == JFileChooser.APPROVE_OPTION)
@@ -175,6 +180,31 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 					card.setNemesisPath(findElement(el, "nemesispath"));
 					card.setNumberInDeck(new Integer(findElement(el, "numberindeck")));
 					card.setColor(new Color(new Integer(findElement(el, "powercolor")).intValue()));
+					
+					if (findElement(el, "namefontcolor").isEmpty() == false)
+						card.setNameFontColor(new Color(new Integer(findElement(el, "namefontcolor")).intValue()));
+					
+					if (findElement(el, "hpfontcolor").isEmpty() == false)
+						card.setHpFontColor(new Color(new Integer(findElement(el, "hpfontcolor")).intValue()));
+					
+					if (findElement(el, "powernamefontcolor").isEmpty() == false)
+						card.setPowerNameFontColor(new Color(new Integer(findElement(el, "powernamefontcolor")).intValue()));
+					
+					if (findElement(el, "powerfontcolor").isEmpty() == false)
+						card.setPowerFontColor(new Color(new Integer(findElement(el, "powerfontcolor")).intValue()));
+					
+					if (findFontElement(el, "namefont") != null)
+						card.setNameFont(findFontElement(el, "namefont"));
+					
+					if (findFontElement(el, "powernamefont") != null)
+						card.setPowerNameFont(findFontElement(el, "powernamefont"));
+					
+					if (findFontElement(el, "hpfont") != null)
+						card.setHpFont(findFontElement(el, "hpfont"));
+					
+					if (findFontElement(el, "powerfont") != null)
+						card.setPowerFont(findFontElement(el, "powerfont"));
+					
 					cards.add(card);
 				}
 				
@@ -195,6 +225,56 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 					card.setAbilityLine4(findElement(el, "abilityline4"));
 					card.setAbilityLine5(findElement(el, "abilityline5"));
 					card.setAbilityLine6(findElement(el, "abilityline6"));
+					
+					if (findElement(el, "textfontcolor").isEmpty() == false)
+						card.setTextFontColor(new Color(new Integer(findElement(el, "textfontcolor")).intValue()));
+					
+					if (findFontElement(el, "textfont") != null)
+						card.setTextFont(findFontElement(el, "textfont"));
+					
+					cards.add(card);
+				}
+				
+				els = document.getElementsByTag("villainfrontcard");
+				for (Element el : els)
+				{
+					Integer id = new Integer(findElement(el, "id"));
+					String name = findElement(el, "name");
+					VillainFrontCard card = new VillainFrontCard(name, id);
+					card.setClasses(findElement(el, "classes"));
+					card.setHealthPoints(findElement(el, "healthpoints"));
+					card.setPortraitFile(findElement(el, "portrait"));
+					card.setDescription1(findElement(el, "description1"));
+					card.setDescription2(findElement(el, "description2"));
+					card.setNemesisPath(findElement(el, "nemesispath"));
+					card.setNumberInDeck(new Integer(findElement(el, "numberindeck")));
+					card.setColor(new Color(new Integer(findElement(el, "descriptioncolor")).intValue()));
+					card.setClassColor(new Color(new Integer(findElement(el, "classcolor")).intValue()));
+					
+					if (findElement(el, "namefontcolor").isEmpty() == false)
+						card.setNameFontColor(new Color(new Integer(findElement(el, "namefontcolor")).intValue()));
+					
+					if (findElement(el, "hpfontcolor").isEmpty() == false)
+						card.setHpFontColor(new Color(new Integer(findElement(el, "hpfontcolor")).intValue()));
+					
+					if (findElement(el, "classfontcolor").isEmpty() == false)
+						card.setClassFontColor(new Color(new Integer(findElement(el, "classfontcolor")).intValue()));
+					
+					if (findElement(el, "descriptionfontcolor").isEmpty() == false)
+						card.setDescriptionFontColor(new Color(new Integer(findElement(el, "descriptionfontcolor")).intValue()));
+					
+					if (findFontElement(el, "namefont") != null)
+						card.setNameFont(findFontElement(el, "namefont"));
+					
+					if (findFontElement(el, "classfont") != null)
+						card.setClassFont(findFontElement(el, "classfont"));
+					
+					if (findFontElement(el, "hpfont") != null)
+						card.setHpFont(findFontElement(el, "hpfont"));
+					
+					if (findFontElement(el, "descriptionfont") != null)
+						card.setDescriptionFont(findFontElement(el, "descriptionfont"));
+					
 					cards.add(card);
 				}
 				
@@ -228,24 +308,38 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 					card.setIssueString(findElement(el, "issuestring"));
 					card.setNameColor(new Color(new Integer(findElement(el, "namecolour")).intValue()));
 					card.setClassColor(new Color(new Integer(findElement(el, "classcolour")).intValue()));
-					cards.add(card);
-				}
-				
-				els = document.getElementsByTag("villainfrontcard");
-				for (Element el : els)
-				{
-					Integer id = new Integer(findElement(el, "id"));
-					String name = findElement(el, "name");
-					VillainFrontCard card = new VillainFrontCard(name, id);
-					card.setClasses(findElement(el, "classes"));
-					card.setHealthPoints(findElement(el, "healthpoints"));
-					card.setPortraitFile(findElement(el, "portrait"));
-					card.setDescription1(findElement(el, "description1"));
-					card.setDescription2(findElement(el, "description2"));
-					card.setNemesisPath(findElement(el, "nemesispath"));
-					card.setNumberInDeck(new Integer(findElement(el, "numberindeck")));
-					card.setColor(new Color(new Integer(findElement(el, "descriptioncolor")).intValue()));
-					card.setClassColor(new Color(new Integer(findElement(el, "classcolor")).intValue()));
+					card.setCardText(findElement(el, "cardtext"));
+					
+					if (findElement(el, "namefontcolor").isEmpty() == false)
+						card.setNameFontColor(new Color(new Integer(findElement(el, "namefontcolor")).intValue()));
+					
+					if (findElement(el, "hpfontcolor").isEmpty() == false)
+						card.setHpFontColor(new Color(new Integer(findElement(el, "hpfontcolor")).intValue()));
+					
+					if (findElement(el, "classfontcolor").isEmpty() == false)
+						card.setClassFontColor(new Color(new Integer(findElement(el, "classfontcolor")).intValue()));
+					
+					if (findElement(el, "descriptionfontcolor").isEmpty() == false)
+						card.setDescriptionFontColor(new Color(new Integer(findElement(el, "descriptionfontcolor")).intValue()));
+					
+					if (findElement(el, "quotefontcolor").isEmpty() == false)
+						card.setQuoteFontColor(new Color(new Integer(findElement(el, "quotefontcolor")).intValue()));
+					
+					if (findFontElement(el, "namefont") != null)
+						card.setNameFont(findFontElement(el, "namefont"));
+					
+					if (findFontElement(el, "classfont") != null)
+						card.setClassFont(findFontElement(el, "classfont"));
+					
+					if (findFontElement(el, "hpfont") != null)
+						card.setHpFont(findFontElement(el, "hpfont"));
+					
+					if (findFontElement(el, "descriptionfont") != null)
+						card.setDescriptionFont(findFontElement(el, "descriptionfont"));
+					
+					if (findFontElement(el, "quotefont") != null)
+						card.setQuoteFont(findFontElement(el, "quotefont"));
+					
 					cards.add(card);
 				}
 				
@@ -266,6 +360,38 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 					card.setIssueString(findElement(el, "issuestring"));
 					card.setNameColor(new Color(new Integer(findElement(el, "namecolour")).intValue()));
 					card.setClassColor(new Color(new Integer(findElement(el, "classcolour")).intValue()));
+					card.setCardText(findElement(el, "cardtext"));
+					
+					if (findElement(el, "namefontcolor").isEmpty() == false)
+						card.setNameFontColor(new Color(new Integer(findElement(el, "namefontcolor")).intValue()));
+					
+					if (findElement(el, "hpfontcolor").isEmpty() == false)
+						card.setHpFontColor(new Color(new Integer(findElement(el, "hpfontcolor")).intValue()));
+					
+					if (findElement(el, "classfontcolor").isEmpty() == false)
+						card.setClassFontColor(new Color(new Integer(findElement(el, "classfontcolor")).intValue()));
+					
+					if (findElement(el, "descriptionfontcolor").isEmpty() == false)
+						card.setDescriptionFontColor(new Color(new Integer(findElement(el, "descriptionfontcolor")).intValue()));
+					
+					if (findElement(el, "quotefontcolor").isEmpty() == false)
+						card.setQuoteFontColor(new Color(new Integer(findElement(el, "quotefontcolor")).intValue()));
+					
+					if (findFontElement(el, "namefont") != null)
+						card.setNameFont(findFontElement(el, "namefont"));
+					
+					if (findFontElement(el, "classfont") != null)
+						card.setClassFont(findFontElement(el, "classfont"));
+					
+					if (findFontElement(el, "hpfont") != null)
+						card.setHpFont(findFontElement(el, "hpfont"));
+					
+					if (findFontElement(el, "descriptionfont") != null)
+						card.setDescriptionFont(findFontElement(el, "descriptionfont"));
+					
+					if (findFontElement(el, "quotefont") != null)
+						card.setQuoteFont(findFontElement(el, "quotefont"));
+					
 					cards.add(card);
 				}
 				
@@ -300,6 +426,29 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 			val = sel.text();
 		}
 		return val;
+	}
+	
+	private Font findFontElement(Element el, String attr)
+	{
+		Font f = null;
+		String val = "";
+		Elements subels = el.getElementsByTag(attr);
+		for (Element sel : subels)
+		{
+			val = sel.text();
+		}
+		
+		try
+		{
+			String[] vals = val.split(";");
+			f = new Font(vals[0], new Integer(vals[1]).intValue(), new Integer(vals[2]).intValue());
+		}
+		catch (Exception e)
+		{
+			f = null;
+		}
+		
+		return f;
 	}
 	
 	private Integer findHighestID(List<Card> cards)
@@ -391,5 +540,13 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 		{
 			creatorMenuBar.cardPaneSelected();
 		}
+	}
+
+	public JFileChooser getChooser() {
+		return chooser;
+	}
+
+	public void setChooser(JFileChooser chooser) {
+		this.chooser = chooser;
 	}
 }
