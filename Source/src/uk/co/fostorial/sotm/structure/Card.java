@@ -78,12 +78,32 @@ public class Card {
 	public String getHealthPoints() {
 		return healthPoints;
 	}
+	
+	public int getHealthPointsInt() {
+		if (healthPoints != null)
+		{
+			try
+			{
+				Integer i = new Integer(healthPoints);
+				return i.intValue();
+			}
+			catch(Exception e)
+			{
+				return 0;
+			}
+		}
+		return 0;
+	}
 
 	public void setHealthPoints(String healthPoints) {
 		this.healthPoints = healthPoints;
 	}
 
 	public Integer getNumberInDeck() {
+		if (numberInDeck == null)
+		{
+			numberInDeck = new Integer(0);
+		}
 		return numberInDeck;
 	}
 

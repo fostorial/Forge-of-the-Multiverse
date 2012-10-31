@@ -362,6 +362,8 @@ public class CreatorTab extends JSplitPane {
 	    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 	    g2.drawImage(srcImg, 0, 0, w, h, null);
 	    g2.dispose();
+	    g2 = null;
+	    System.gc();
 	    return resizedImg;
 	}
 	
@@ -387,6 +389,9 @@ public class CreatorTab extends JSplitPane {
         }
         
         g.dispose();
+        g = null;
+        crp = null;
+        System.gc();
 		
 		return getScaledImage(image, w, h);
 	}
@@ -414,6 +419,8 @@ public class CreatorTab extends JSplitPane {
         
         g.dispose();
         crp = null;
+        g = null;
+        comps = null;
         System.gc();
 		
 		return image;
@@ -425,5 +432,27 @@ public class CreatorTab extends JSplitPane {
 
 	public void setCard(Card card) {
 		this.card = card;
+	}
+	
+	public void dispose()
+	{
+		Component[] comps = imagePane.getComponents();
+        for (int i = comps.length - 1; i >= 0; i--)
+        {
+        	comps[i] = null;
+        }
+        
+        comps = properties.getComponents();
+        for (int i = comps.length - 1; i >= 0; i--)
+        {
+        	comps[i] = null;
+        }
+        
+        properties = null;
+        imagePane = null;
+        card = null;
+        frame = null;
+        
+        System.gc();
 	}
 }

@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Window;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -25,6 +27,7 @@ import org.jsoup.select.Elements;
 import uk.co.fostorial.sotm.deck.DeckManager;
 import uk.co.fostorial.sotm.design.CreatorTab;
 import uk.co.fostorial.sotm.design.CreatorTabCardBack;
+import uk.co.fostorial.sotm.design.CreatorTabEnvironmentCard;
 import uk.co.fostorial.sotm.design.CreatorTabHeroBack;
 import uk.co.fostorial.sotm.design.CreatorTabHeroCard;
 import uk.co.fostorial.sotm.design.CreatorTabHeroFront;
@@ -33,6 +36,8 @@ import uk.co.fostorial.sotm.design.CreatorTabVillainFront;
 import uk.co.fostorial.sotm.structure.BackCard;
 import uk.co.fostorial.sotm.structure.Card;
 import uk.co.fostorial.sotm.structure.Deck;
+import uk.co.fostorial.sotm.structure.EnvironmentCard;
+import uk.co.fostorial.sotm.structure.EnvironmentDeck;
 import uk.co.fostorial.sotm.structure.HeroBackCard;
 import uk.co.fostorial.sotm.structure.HeroCard;
 import uk.co.fostorial.sotm.structure.HeroDeck;
@@ -54,6 +59,8 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 	final static public int FILE_NEW_HERO_DECK = 7;
 	final static public int FILE_OPEN_HERO_DECK = 8;
 	final static public int FILE_NEW_VILLAIN_DECK = 9;
+	final static public int FILE_NEW_ENVIRONMENT_DECK = 10;
+	final static public int FILE_NEW_ENVIRONMENT_CARD = 11;
 	
 	private CreatorMenuBar creatorMenuBar;
 	
@@ -81,6 +88,7 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 		
 		tabbedPane = new JTabbedPane();
 		tabbedPane.addChangeListener(this);
+		tabbedPane.addMouseListener(new FrameMouseAdapter(this));
 		this.add(tabbedPane, BorderLayout.CENTER);
 		
 		enableOSXFullscreen(this);
@@ -111,6 +119,10 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 			tabbedPane.addTab("New Villian Card", new CreatorTabVillainCard(this, (VillainCard)card));
 			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
 			break;
+		case FILE_NEW_ENVIRONMENT_CARD:
+			tabbedPane.addTab("New Environment Card", new CreatorTabEnvironmentCard(this, (EnvironmentCard)card));
+			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
+			break;
 		case FILE_NEW_CARD_BACK:
 			tabbedPane.addTab(card.getName(), new CreatorTabCardBack(this, (BackCard)card));
 			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
@@ -125,6 +137,11 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
 			((JSplitPane)tabbedPane.getSelectedComponent()).getLeftComponent().requestFocus();
 			break;
+		case FILE_NEW_ENVIRONMENT_DECK:
+			tabbedPane.addTab("New Environment Deck", new DeckManager(DeckManager.ENVIRONMENT_MODE, null, this));
+			tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
+			((JSplitPane)tabbedPane.getSelectedComponent()).getLeftComponent().requestFocus();
+			break;
 		case FILE_OPEN_HERO_DECK:
 			Deck deck = loadDeck();
 			if (deck != null)
@@ -136,6 +153,10 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 				if (deck instanceof VillainDeck)
 				{
 					tabbedPane.addTab(deck.getName(), new DeckManager(DeckManager.VILLAIN_MODE, deck, this));
+				}
+				if (deck instanceof EnvironmentDeck)
+				{
+					tabbedPane.addTab(deck.getName(), new DeckManager(DeckManager.ENVIRONMENT_MODE, deck, this));
 				}
 				tabbedPane.setSelectedIndex(tabbedPane.getComponentCount() - 1);
 				//((JSplitPane)tabbedPane.getSelectedComponent()).getLeftComponent().requestFocus();
@@ -395,6 +416,59 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 					cards.add(card);
 				}
 				
+				els = document.getElementsByTag("environmentcard");
+				for (Element el : els)
+				{
+					Integer id = new Integer(findElement(el, "id"));
+					String name = findElement(el, "name");
+					EnvironmentCard card = new EnvironmentCard(name, id);
+					card.setClasses(findElement(el, "classes"));
+					card.setHealthPoints(findElement(el, "healthpoints"));
+					card.setHealthPointsImage(findElement(el, "healthpointsimage"));
+					card.setHealthPointsVisible(new Boolean(findElement(el, "healthpointsvisible")));
+					card.setPortraitFile(findElement(el, "portrait"));
+					card.setNumberInDeck(new Integer(findElement(el, "numberindeck")));
+					card.setQuoteString1(findElement(el, "quotestring1"));
+					card.setNameColor(new Color(new Integer(findElement(el, "namecolour")).intValue()));
+					card.setClassColor(new Color(new Integer(findElement(el, "classcolour")).intValue()));
+					card.setQuoteColor(new Color(new Integer(findElement(el, "quotecolour")).intValue()));
+					card.setCardText(findElement(el, "cardtext"));
+					
+					card.setClassVisible(new Boolean(findElement(el, "classvisible")));
+					
+					if (findElement(el, "namefontcolor").isEmpty() == false)
+						card.setNameFontColor(new Color(new Integer(findElement(el, "namefontcolor")).intValue()));
+					
+					if (findElement(el, "hpfontcolor").isEmpty() == false)
+						card.setHpFontColor(new Color(new Integer(findElement(el, "hpfontcolor")).intValue()));
+					
+					if (findElement(el, "classfontcolor").isEmpty() == false)
+						card.setClassFontColor(new Color(new Integer(findElement(el, "classfontcolor")).intValue()));
+					
+					if (findElement(el, "descriptionfontcolor").isEmpty() == false)
+						card.setDescriptionFontColor(new Color(new Integer(findElement(el, "descriptionfontcolor")).intValue()));
+					
+					if (findElement(el, "quotefontcolor").isEmpty() == false)
+						card.setQuoteFontColor(new Color(new Integer(findElement(el, "quotefontcolor")).intValue()));
+					
+					if (findFontElement(el, "namefont") != null)
+						card.setNameFont(findFontElement(el, "namefont"));
+					
+					if (findFontElement(el, "classfont") != null)
+						card.setClassFont(findFontElement(el, "classfont"));
+					
+					if (findFontElement(el, "hpfont") != null)
+						card.setHpFont(findFontElement(el, "hpfont"));
+					
+					if (findFontElement(el, "descriptionfont") != null)
+						card.setDescriptionFont(findFontElement(el, "descriptionfont"));
+					
+					if (findFontElement(el, "quotefont") != null)
+						card.setQuoteFont(findFontElement(el, "quotefont"));
+					
+					cards.add(card);
+				}
+				
 				if (deckType.equals("herodeck"))
 				{
 					deck = new HeroDeck(cards);
@@ -402,6 +476,10 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 				else if (deckType.equals("villaindeck"))
 				{
 					deck = new VillainDeck(cards);
+				}
+				else if (deckType.equals("environmentdeck"))
+				{
+					deck = new EnvironmentDeck(cards);
 				}
 				else
 				{
@@ -548,5 +626,29 @@ public class CreatorFrame extends JFrame implements ChangeListener {
 
 	public void setChooser(JFileChooser chooser) {
 		this.chooser = chooser;
+	}
+	
+	public class FrameMouseAdapter extends MouseAdapter
+	{
+		private CreatorFrame frame;
+		
+		public FrameMouseAdapter(CreatorFrame frame)
+		{
+			this.frame = frame;
+		}
+		
+		public void mousePressed(MouseEvent e){
+	        if (e.isPopupTrigger())
+	            doPop(e);
+	    }
+
+	    public void mouseReleased(MouseEvent e){
+	        if (e.isPopupTrigger())
+	            doPop(e);
+	    }
+
+	    private void doPop(MouseEvent e){
+	        frame.getCreatorMenuBar().getFrameMenu().show(e.getComponent(), e.getX(), e.getY());
+	    }
 	}
 }

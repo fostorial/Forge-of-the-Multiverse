@@ -2,6 +2,8 @@ package uk.co.fostorial.sotm.deck;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -15,7 +17,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
@@ -26,6 +27,7 @@ import javax.swing.event.ListSelectionListener;
 import uk.co.fostorial.sotm.CreatorFrame;
 import uk.co.fostorial.sotm.design.CreatorTab;
 import uk.co.fostorial.sotm.design.CreatorTabCardBack;
+import uk.co.fostorial.sotm.design.CreatorTabEnvironmentCard;
 import uk.co.fostorial.sotm.design.CreatorTabHeroBack;
 import uk.co.fostorial.sotm.design.CreatorTabHeroCard;
 import uk.co.fostorial.sotm.design.CreatorTabHeroFront;
@@ -34,6 +36,8 @@ import uk.co.fostorial.sotm.design.CreatorTabVillainFront;
 import uk.co.fostorial.sotm.structure.BackCard;
 import uk.co.fostorial.sotm.structure.Card;
 import uk.co.fostorial.sotm.structure.Deck;
+import uk.co.fostorial.sotm.structure.EnvironmentCard;
+import uk.co.fostorial.sotm.structure.EnvironmentDeck;
 import uk.co.fostorial.sotm.structure.HeroBackCard;
 import uk.co.fostorial.sotm.structure.HeroCard;
 import uk.co.fostorial.sotm.structure.HeroDeck;
@@ -52,10 +56,10 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 	
 	private JScrollPane cardTableScroll;
 	private JTable cardTable;
-	private JPanel properties;
-	private JScrollPane propertiesScroll;
 	private JSplitPane horizontalSplit;
 	private JLabel preview;
+	private JScrollPane deckStatScroll;
+	private JTable deckStatTable;
 	
 	private int deckMode;
 	private Deck deck;
@@ -93,11 +97,15 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 		preview.setBounds(0, 0, 230, 300);
 		horizontalSplit.setTopComponent(preview);
 		
-		propertiesScroll = new JScrollPane();
-		propertiesScroll.setAutoscrolls(true);
-		properties = new JPanel();
-		propertiesScroll.setViewportView(properties);
-		horizontalSplit.setBottomComponent(propertiesScroll);
+		deckStatScroll = new JScrollPane();
+		deckStatScroll.setAutoscrolls(true);
+		deckStatTable = new JTable(new DeckStatisticsTableModel(deck));
+		deckStatTable.setFillsViewportHeight(true);
+		deckStatTable.setEnabled(false);
+		//cardTable.setAutoCreateRowSorter(true);
+		deckStatTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		deckStatScroll.setViewportView(deckStatTable);
+		horizontalSplit.setBottomComponent(deckStatScroll);
 		
 		this.setRightComponent(horizontalSplit);
 		
@@ -111,6 +119,7 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 		cardTable.getSelectionModel().addListSelectionListener(this);
 		cardTableScroll.setViewportView(cardTable);
 		cardTable.setRowSelectionInterval(0, 0);
+		cardTable.addMouseListener(new DeckMouseAdapter(frame));
 		this.setLeftComponent(cardTableScroll);
 		
 		
@@ -127,7 +136,7 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 			deck.setName("New Villain Deck");
 			break;
 		case DeckManager.ENVIRONMENT_MODE:
-			deck = new Deck();
+			deck = new EnvironmentDeck();
 			deck.setName("New Environment Deck");
 			break;
 		case DeckManager.HERO_MODE:
@@ -219,6 +228,14 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 				ImageIcon ii = new ImageIcon(creator.getImage(214, 300));
 				preview.setIcon(ii);
 			}
+			
+			if (selectedCard instanceof EnvironmentCard)
+			{
+				creator = new CreatorTabEnvironmentCard(frame, (EnvironmentCard)selectedCard);
+				
+				ImageIcon ii = new ImageIcon(creator.getImage(214, 300));
+				preview.setIcon(ii);
+			}
 		}
 	}
 	
@@ -230,23 +247,25 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 			deck.addCard(new VillainCard("Villain Card", new Integer(deck.getNextIDInteger())));
 			break;
 		case DeckManager.ENVIRONMENT_MODE:
-			//TODO Environment cards
+			deck.addCard(new EnvironmentCard("Environment Card", new Integer(deck.getNextIDInteger())));
 			break;
 		case DeckManager.HERO_MODE:
 			deck.addCard(new HeroCard("Hero Card", new Integer(deck.getNextIDInteger())));
 			break;
 		}
 		cardTable.repaint();
+		deckStatTable.repaint();
 	}
 	
 	public void increaseNumberInDeck()
 	{
-		if (selectedCard != null && (selectedCard instanceof HeroCard || selectedCard instanceof VillainCard))
+		if (selectedCard != null && (selectedCard instanceof HeroCard || selectedCard instanceof VillainCard || selectedCard instanceof EnvironmentCard))
 		{
 			int number = selectedCard.getNumberInDeck().intValue();
 			number++;
 			selectedCard.setNumberInDeck(new Integer(number));
 			cardTable.repaint();
+			deckStatTable.repaint();
 		}
 		else
 		{
@@ -256,7 +275,7 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 	
 	public void decreaseNumberInDeck()
 	{
-		if (selectedCard != null && (selectedCard instanceof HeroCard || selectedCard instanceof VillainCard))
+		if (selectedCard != null && (selectedCard instanceof HeroCard || selectedCard instanceof VillainCard || selectedCard instanceof EnvironmentCard))
 		{
 			int number = selectedCard.getNumberInDeck().intValue();
 			if (number > 1)
@@ -264,13 +283,14 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 				number--;
 				selectedCard.setNumberInDeck(new Integer(number));
 				cardTable.repaint();
+				deckStatTable.repaint();
 			}
 		}
 	}
 	
 	public void deleteCard()
 	{
-		if (selectedCard != null && (selectedCard instanceof HeroCard || selectedCard instanceof VillainCard))
+		if (selectedCard != null && (selectedCard instanceof HeroCard || selectedCard instanceof VillainCard || selectedCard instanceof EnvironmentCard))
 		{
 			int outcome = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this card?");
 			
@@ -279,6 +299,7 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 				deck.removeCard(selectedCard);
 				cardTable.setRowSelectionInterval(0, 0);
 				cardTable.repaint();
+				deckStatTable.repaint();
 			}
 		}
 	}
@@ -315,6 +336,11 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 			if (selectedCard instanceof VillainCard)
 			{
 				frame.newWindow(CreatorFrame.FILE_NEW_VILLIAN_CARD, selectedCard);
+			}
+			
+			if (selectedCard instanceof EnvironmentCard)
+			{
+				frame.newWindow(CreatorFrame.FILE_NEW_ENVIRONMENT_CARD, selectedCard);
 			}
 		}
 	}
@@ -411,6 +437,11 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 						creator = new CreatorTabVillainCard(frame, (VillainCard)c);
 					}
 					
+					if (c instanceof EnvironmentCard)
+					{
+						creator = new CreatorTabEnvironmentCard(frame, (EnvironmentCard)c);
+					}
+					
 					if (type.equals("png"))
 					{
 						creator.saveToPNG(chooser.getSelectedFile().getAbsolutePath());
@@ -422,6 +453,8 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 					}
 				}
 			}
+			
+			JOptionPane.showMessageDialog(frame, "Export Complete!");
 		}
 		
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -438,9 +471,7 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 	}
 	
 	private void exportDeckPages(String type)
-	{
-		CreatorTab creator = null;
-		
+	{	
 		JFileChooser chooser = frame.getChooser();
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		chooser.validate();
@@ -477,9 +508,14 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 					{
 						cardBack = (BackCard)c;
 					}
-					else if (c instanceof HeroCard || c instanceof VillainCard)
+					else if (c instanceof HeroCard || c instanceof VillainCard || c instanceof EnvironmentCard)
 					{
-						cards.add(c);
+						int i = 0;
+						int numberInDeck = c.getNumberInDeck().intValue();
+						for (i = 0; i < numberInDeck; i++)
+						{
+							cards.add(c);
+						}
 					}
 					else if (c instanceof VillainFrontCard)
 					{
@@ -500,11 +536,33 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 			Graphics2D g = null;
 			int cardWidth = 0;
 			int cardHeight = 0;
+			BufferedImage cardImage = null;
+			
+			if (deck instanceof EnvironmentDeck)
+			{
+				CreatorTab creatorTab = new CreatorTabCardBack(frame, (BackCard)deck.getCards().get(0));
+				BufferedImage image = creatorTab.getImage();
+		        
+				int imageType = BufferedImage.TYPE_INT_RGB;
+		        outputImage = new BufferedImage((image.getWidth() * 3) + (4 * 20), (image.getHeight() * 3) + (4 * 20), imageType);
+		        g = outputImage.createGraphics();
+		        g.setBackground(Color.white);
+				g.setColor(Color.white);
+				g.fillRect(0, 0, outputImage.getWidth(), outputImage.getHeight());
+				
+		        cardWidth = image.getWidth();
+		        cardHeight = image.getHeight();
+		        
+		        creatorTab.dispose();
+		        creatorTab = null;
+		        image = null;
+		        System.gc();
+			}
 			
 			if (heroFront != null)
 			{
-				creator = new CreatorTabHeroFront(frame, heroFront);
-				BufferedImage image = creator.getImage();
+				CreatorTab creatorTab = new CreatorTabHeroFront(frame, heroFront);
+				BufferedImage image = creatorTab.getImage();
 		        
 				int imageType = BufferedImage.TYPE_INT_RGB;
 		        outputImage = new BufferedImage((image.getWidth() * 3) + (4 * 20), (image.getHeight() * 3) + (4 * 20), imageType);
@@ -517,12 +575,17 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 		        
 		        cardWidth = image.getWidth();
 		        cardHeight = image.getHeight();
+		        
+		        creatorTab.dispose();
+		        creatorTab = null;
+		        image = null;
+		        System.gc();
 			}
 			
 			if (villainFront != null)
 			{
-				creator = new CreatorTabVillainFront(frame, villainFront);
-				BufferedImage image = creator.getImage();
+				CreatorTab creatorTab = new CreatorTabVillainFront(frame, villainFront);
+				BufferedImage image = creatorTab.getImage();
 		        
 				int imageType = BufferedImage.TYPE_INT_RGB;
 		        outputImage = new BufferedImage((image.getWidth() * 3) + (4 * 20), (image.getHeight() * 3) + (4 * 20), imageType);
@@ -535,46 +598,84 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 		        
 		        cardWidth = image.getWidth();
 		        cardHeight = image.getHeight();
+		        
+		        creatorTab.dispose();
+		        creatorTab = null;
+		        image = null;
+		        System.gc();
 			}
 				
 			int x = 20 + cardWidth + 20;
 			int y = 20;
+			
+			if (deck instanceof EnvironmentDeck)
+			{
+				x = 20;
+			}
+			
 			for (Card c : cards)
 			{
+				//System.err.println("Pre Creator!");
+		        //System.err.println("Free Memory: " + Runtime.getRuntime().freeMemory());
+		        
 				if (c != null)
 				{
 					if (c instanceof HeroFrontCard)
 					{
-						creator = new CreatorTabHeroFront(frame, (HeroFrontCard)c);
+						CreatorTab creatorTab = new CreatorTabHeroFront(frame, (HeroFrontCard)c);
+						cardImage = creatorTab.getImage();
+						creatorTab = null;
 					}
 					
 					if (c instanceof HeroBackCard)
 					{
-						creator = new CreatorTabHeroBack(frame, (HeroBackCard)c);
+						CreatorTab creatorTab = new CreatorTabHeroBack(frame, (HeroBackCard)c);
+						cardImage = creatorTab.getImage();
+						creatorTab = null;
 					}
 					
 					if (c instanceof BackCard)
 					{
-						creator = new CreatorTabCardBack(frame, (BackCard)c);
+						CreatorTab creatorTab = new CreatorTabCardBack(frame, (BackCard)c);
+						cardImage = creatorTab.getImage();
+						creatorTab = null;
 					}
 					
 					if (c instanceof HeroCard)
 					{
-						creator = new CreatorTabHeroCard(frame, (HeroCard)c);
+						CreatorTab creatorTab = new CreatorTabHeroCard(frame, (HeroCard)c);
+						cardImage = creatorTab.getImage();
+						creatorTab = null;
 					}
 					
 					if (c instanceof VillainFrontCard)
 					{
-						creator = new CreatorTabVillainFront(frame, (VillainFrontCard)c);
+						CreatorTab creatorTab = new CreatorTabVillainFront(frame, (VillainFrontCard)c);
+						cardImage = creatorTab.getImage();
+						creatorTab = null;
 					}
 					
 					if (c instanceof VillainCard)
 					{
-						creator = new CreatorTabVillainCard(frame, (VillainCard)c);
+						CreatorTab creatorTab = new CreatorTabVillainCard(frame, (VillainCard)c);
+						cardImage = creatorTab.getImage();
+						creatorTab = null;
+					}
+					
+					if (c instanceof EnvironmentCard)
+					{
+						CreatorTab creatorTab = new CreatorTabEnvironmentCard(frame, (EnvironmentCard)c);
+						cardImage = creatorTab.getImage();
+						creatorTab = null;
 					}
 				}
-				g.drawImage(creator.getImage(), x, y, null);
+				g.drawImage(cardImage, x, y, null);
+				cardImage = null;
 				x += cardWidth + 20;
+				System.gc();
+				
+				//System.err.println("Post Creator!");
+		        //System.err.println("Free Memory: " + Runtime.getRuntime().freeMemory());
 				
 				if (x >= (int)((3 * cardWidth) + (4 * 20)))
 				{
@@ -587,6 +688,9 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 				/* Save and reset page */
 				if (currentCard >= 9 || (currentCard + (currentPage * 9)) >= cards.size())
 				{
+					//System.err.println("Write Image!");
+			        //System.err.println("Free Memory: " + Runtime.getRuntime().freeMemory());
+			        
 					try
 					{
 						File f = new File(chooser.getSelectedFile().getAbsolutePath() + File.separator + deck.getName() + (int)(currentPage + 1) + "." + type);
@@ -605,6 +709,8 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 						e.printStackTrace();
 					}
 				}
+				
+				System.gc();
 			}
 			
 			/* Write card backs */
@@ -615,8 +721,8 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 			
 			if (heroBack != null)
 			{
-				creator = new CreatorTabHeroBack(frame, heroBack);
-				BufferedImage image = creator.getImage();
+				CreatorTab creatorTab = new CreatorTabHeroBack(frame, heroBack);
+				BufferedImage image = creatorTab.getImage();
 		        
 				g.fillRect(0, 0, outputImage.getWidth(), outputImage.getHeight());
 				
@@ -625,8 +731,8 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 			
 			if (villainBack != null)
 			{
-				creator = new CreatorTabVillainFront(frame, villainBack);
-				BufferedImage image = creator.getImage();
+				CreatorTab creatorTab = new CreatorTabVillainFront(frame, villainBack);
+				BufferedImage image = creatorTab.getImage();
 		        
 				g.fillRect(0, 0, outputImage.getWidth(), outputImage.getHeight());
 		        
@@ -636,30 +742,55 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 			currentCard = 0;
 			currentPage = 0;
 			
-			creator = new CreatorTabCardBack(frame, cardBack);
-			BufferedImage cardBackImage = creator.getImage();
+			CreatorTab creatorTab = new CreatorTabCardBack(frame, cardBack);
+			cardImage = creatorTab.getImage();
+			creatorTab.dispose();
+			creatorTab = null;
 			
 			for (int i = 0; i < cards.size(); i++)
 			{
 				
 				if (currentCard == 0 && currentPage == 0)
 				{
-					x = 20 + cardWidth + 20;
+					if (deck instanceof EnvironmentDeck == false)
+					{
+						x = 20 + cardWidth + 20;
+					}
+					else
+					{
+						x = 20;
+					}
 				}
 				
 				if (currentCard == 1 && currentPage == 0)
 				{
-					x = 20;
+					if (deck instanceof EnvironmentDeck == false)
+					{
+						x = 20;
+					}
+					else
+					{
+						x = 20 + cardWidth + 20;
+					}
 				}
 				
 				if (currentCard == 2 && currentPage == 0)
 				{
-					x = 20;
-					y += cardHeight + 20;
+					if (deck instanceof EnvironmentDeck == false)
+					{
+						x = 20;
+						y += cardHeight + 20;
+					}
+					else
+					{
+						x = 20 + cardWidth + 20 + cardWidth + 20;
+					}
 				}
 				
-				g.drawImage(cardBackImage, x, y, null);
+				g.drawImage(cardImage, x, y, null);
 				x += cardWidth + 20;
+				
+				System.gc();
 				
 				if (x >= (int)((3 * cardWidth) + (4 * 20)))
 				{
@@ -672,6 +803,9 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 				/* Save and reset page */
 				if (currentCard >= 9 || (currentCard + (currentPage * 9)) >= cards.size())
 				{
+					//System.err.println("Write Image!");
+			        //System.err.println("Free Memory: " + Runtime.getRuntime().freeMemory());
+			        
 					try
 					{
 						File f = new File(chooser.getSelectedFile().getAbsolutePath() + File.separator + deck.getName() + (int)(currentPage + 1 + filledPages) + "." + type);
@@ -690,7 +824,12 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 						e.printStackTrace();
 					}
 				}
+				
+				System.gc();
 			}
+			
+			JOptionPane.showMessageDialog(frame, "Export Complete!");
+			
 		}
 		
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -795,10 +934,75 @@ public class DeckManager extends JSplitPane implements ListSelectionListener {
 					}
 				}
 				
+				if (deck instanceof EnvironmentDeck)
+				{
+					List<EnvironmentCard> cards = new ArrayList<EnvironmentCard>();
+					
+					for (Card c : deck.getCards())
+					{
+						if (c instanceof EnvironmentCard)
+						{
+							cards.add((EnvironmentCard)c);
+						}
+					}
+					
+					for (EnvironmentCard c : cards)
+					{
+						out.write("Name: " + c.getName() + "\n");
+						out.write("Health Points: " + c.getHealthPoints() + "\n");
+						out.write("Classes: " + c.getClasses() + "\n");
+						out.write("Card Text: " + c.getCardText() + "\n");
+						out.write("Quote: " + c.getQuoteString1() + "\n");
+						out.write("Number in Deck: " + c.getNumberInDeck() + "\n\n");
+					}
+				}
+				
 				out.close();
+				
+				JOptionPane.showMessageDialog(frame, "Export Complete!");
 			}
 		} catch (IOException e) {
 		    e.printStackTrace();
 		}
+	}
+	
+	public JScrollPane getDeckStatScroll() {
+		return deckStatScroll;
+	}
+
+	public void setDeckStatScroll(JScrollPane deckStatScroll) {
+		this.deckStatScroll = deckStatScroll;
+	}
+
+	public JTable getDeckStatTable() {
+		return deckStatTable;
+	}
+
+	public void setDeckStatTable(JTable deckStatTable) {
+		this.deckStatTable = deckStatTable;
+	}
+
+	public class DeckMouseAdapter extends MouseAdapter
+	{
+		private CreatorFrame frame;
+		
+		public DeckMouseAdapter(CreatorFrame frame)
+		{
+			this.frame = frame;
+		}
+		
+		public void mousePressed(MouseEvent e){
+	        if (e.isPopupTrigger())
+	            doPop(e);
+	    }
+
+	    public void mouseReleased(MouseEvent e){
+	        if (e.isPopupTrigger())
+	            doPop(e);
+	    }
+
+	    private void doPop(MouseEvent e){
+	        frame.getCreatorMenuBar().getCardMenu().show(e.getComponent(), e.getX(), e.getY());
+	    }
 	}
 }

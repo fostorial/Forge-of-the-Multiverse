@@ -155,7 +155,7 @@ public class CreatorTabHeroFront extends CreatorTab implements ActionListener {
 		getProperties().add(powerFontColorButton);
 		
 		textBGColour = new JButton("Set Text Backing Colour");
-		textBGColour.setBounds(5, txtPowerLine.getBounds().y + txtPowerLine.getBounds().height + 10, 250, 25);
+		textBGColour.setBounds(5, powerFontColorButton.getBounds().y + powerFontColorButton.getBounds().height + 10, 250, 25);
 		textBGColour.addActionListener(this);
 		getProperties().add(textBGColour);
 		

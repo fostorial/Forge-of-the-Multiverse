@@ -9,6 +9,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 
 import uk.co.fostorial.sotm.deck.DeckManager;
@@ -22,6 +23,7 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 	private JMenu file;
 	private JMenuItem fileNewHeroDeck;
 	private JMenuItem fileNewVillainDeck;
+	private JMenuItem fileNewEnvironmentDeck;
 	private JMenuItem fileOpenDeck;
 	private JMenuItem fileSaveDeckAs;
 	private JMenuItem fileCloseCurrentTab;
@@ -47,6 +49,17 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 	private JMenu help;
 	private JMenuItem version;
 	
+	private JPopupMenu cardMenu;
+	private JMenuItem cardNewCard;
+	private JMenuItem cardIncreaseNumberInDeck;
+	private JMenuItem cardDecreaseNumberInDeck;
+	private JMenuItem cardEditCard;
+	private JMenuItem cardDeleteCard;
+	
+	private JPopupMenu frameMenu;
+	private JMenuItem frameSaveDeckAs;
+	private JMenuItem frameCloseCurrentTab;
+	
 	public CreatorMenuBar(CreatorFrame frame)
 	{
 		this.setFrame(frame);
@@ -70,6 +83,13 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 		        KeyEvent.VK_V, KeyEvent.ALT_DOWN_MASK);
 		fileNewVillainDeck.setAccelerator(key);
 		file.add(fileNewVillainDeck);
+		
+		fileNewEnvironmentDeck = new JMenuItem("New Environment Deck");
+		fileNewEnvironmentDeck.addActionListener(this);
+		key = KeyStroke.getKeyStroke(
+		        KeyEvent.VK_E, KeyEvent.ALT_DOWN_MASK);
+		fileNewEnvironmentDeck.setAccelerator(key);
+		file.add(fileNewEnvironmentDeck);
 		
 		fileOpenDeck = new JMenuItem("Open Deck...");
 		fileOpenDeck.addActionListener(this);
@@ -196,14 +216,14 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 		deckDecreaseNumberInDeck.setAccelerator(key);
 		deck.add(deckDecreaseNumberInDeck);
 		
-		deck.addSeparator();
+		//deck.addSeparator();
 		
 		deckStatistics = new JMenuItem("Deck Statistics");
 		deckStatistics.addActionListener(this);
 		key = KeyStroke.getKeyStroke(
 		        KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK);
 		deckStatistics.setAccelerator(key);
-		deck.add(deckStatistics);
+		//deck.add(deckStatistics);
 		
 		this.add(deck);
 		
@@ -215,6 +235,34 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 		help.add(version);
 		
 		this.add(help);
+		
+		
+		cardMenu = new JPopupMenu();
+		cardNewCard = new JMenuItem("Add New Card");
+		cardNewCard.addActionListener(this);
+		cardEditCard = new JMenuItem("Edit Card");
+		cardEditCard.addActionListener(this);
+		cardDeleteCard = new JMenuItem("Delete Card");
+		cardDeleteCard.addActionListener(this);
+		cardIncreaseNumberInDeck = new JMenuItem("Increase Number in Deck");
+		cardIncreaseNumberInDeck.addActionListener(this);
+		cardDecreaseNumberInDeck = new JMenuItem("Decrease Number in Deck");
+		cardDecreaseNumberInDeck.addActionListener(this);
+		cardMenu.add(cardNewCard);
+		cardMenu.add(cardEditCard);
+		cardMenu.add(cardDeleteCard);
+		cardMenu.addSeparator();
+		cardMenu.add(cardIncreaseNumberInDeck);
+		cardMenu.add(cardDecreaseNumberInDeck);
+		
+		
+		frameMenu = new JPopupMenu();
+		frameCloseCurrentTab = new JMenuItem("Close");
+		frameCloseCurrentTab.addActionListener(this);
+		frameSaveDeckAs = new JMenuItem("Save Deck As...");
+		frameSaveDeckAs.addActionListener(this);
+		//frameMenu.add(frameSaveDeckAs);
+		frameMenu.add(frameCloseCurrentTab);
 	}
 
 	@Override
@@ -234,12 +282,17 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 			frame.newWindow(CreatorFrame.FILE_NEW_VILLAIN_DECK, null);
 		}
 		
+		if (e.getSource().equals(fileNewEnvironmentDeck))
+		{
+			frame.newWindow(CreatorFrame.FILE_NEW_ENVIRONMENT_DECK, null);
+		}
+		
 		if (e.getSource().equals(fileOpenDeck))
 		{
 			frame.newWindow(CreatorFrame.FILE_OPEN_HERO_DECK, null);
 		}
 		
-		if (e.getSource().equals(fileSaveDeckAs))
+		if (e.getSource().equals(fileSaveDeckAs) || e.getSource().equals(frameSaveDeckAs))
 		{
 			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
 			{
@@ -258,7 +311,7 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 			frame.exportToPNG();
 		}
 		
-		if (e.getSource().equals(fileCloseCurrentTab))
+		if (e.getSource().equals(fileCloseCurrentTab) || e.getSource().equals(frameCloseCurrentTab))
 		{
 			frame.closeCurrentFrame();
 		}
@@ -269,7 +322,7 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 			
 		}
 		
-		if (e.getSource().equals(deckNewCard))
+		if (e.getSource().equals(deckNewCard) || e.getSource().equals(cardNewCard))
 		{
 			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
 			{
@@ -278,7 +331,7 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 			}
 		}
 		
-		if (e.getSource().equals(deckIncreaseNumberInDeck))
+		if (e.getSource().equals(deckIncreaseNumberInDeck) || e.getSource().equals(cardIncreaseNumberInDeck))
 		{
 			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
 			{
@@ -287,7 +340,7 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 			}
 		}
 		
-		if (e.getSource().equals(deckDecreaseNumberInDeck))
+		if (e.getSource().equals(deckDecreaseNumberInDeck) || e.getSource().equals(cardDecreaseNumberInDeck))
 		{
 			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
 			{
@@ -296,7 +349,7 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 			}
 		}
 		
-		if (e.getSource().equals(deckEditCard))
+		if (e.getSource().equals(deckEditCard) || e.getSource().equals(cardEditCard))
 		{
 			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
 			{
@@ -305,7 +358,7 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 			}
 		}
 		
-		if (e.getSource().equals(deckDeleteCard))
+		if (e.getSource().equals(deckDeleteCard) || e.getSource().equals(cardDeleteCard))
 		{
 			if (frame.getTabbedPane().getSelectedComponent() instanceof DeckManager)
 			{
@@ -399,6 +452,12 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 		exportExportDeckIndividuallyJPG.setEnabled(true);
 		exportExportDeckIndividuallyJPG.setVisible(true);
 		
+		exportExportDeckFullJPG.setEnabled(true);
+		exportExportDeckFullJPG.setVisible(true);
+		
+		exportExportDeckFullPNG.setEnabled(true);
+		exportExportDeckFullPNG.setVisible(true);
+		
 		exportExportToText.setEnabled(true);
 		exportExportToText.setVisible(true);
 		
@@ -430,6 +489,12 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 		exportExportDeckIndividuallyJPG.setEnabled(false);
 		exportExportDeckIndividuallyJPG.setVisible(false);
 		
+		exportExportDeckFullJPG.setEnabled(false);
+		exportExportDeckFullJPG.setVisible(false);
+		
+		exportExportDeckFullPNG.setEnabled(false);
+		exportExportDeckFullPNG.setVisible(false);
+		
 		exportExportToText.setEnabled(false);
 		exportExportToText.setVisible(false);
 	}
@@ -460,7 +525,31 @@ public class CreatorMenuBar extends JMenuBar implements ActionListener {
 		exportExportDeckIndividuallyJPG.setEnabled(false);
 		exportExportDeckIndividuallyJPG.setVisible(false);
 		
+		exportExportDeckFullJPG.setEnabled(false);
+		exportExportDeckFullJPG.setVisible(false);
+		
+		exportExportDeckFullPNG.setEnabled(false);
+		exportExportDeckFullPNG.setVisible(false);
+		
 		exportExportToText.setEnabled(false);
 		exportExportToText.setVisible(false);
 	}
+
+	public JPopupMenu getCardMenu() {
+		return cardMenu;
+	}
+
+	public void setCardMenu(JPopupMenu cardMenu) {
+		this.cardMenu = cardMenu;
+	}
+
+	public JPopupMenu getFrameMenu() {
+		return frameMenu;
+	}
+
+	public void setFrameMenu(JPopupMenu frameMenu) {
+		this.frameMenu = frameMenu;
+	}
+	
+	
 }
